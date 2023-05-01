@@ -17,8 +17,17 @@ depends_on = None
 
 
 def upgrade() -> None:
-    pass
-
+    op.create_table(
+        'characters',
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('name', sa.VARCHAR, nullable=False),
+        sa.Column('species', sa.VARCHAR, nullable=False),
+        sa.Column('gender', sa.VARCHAR, nullable=False),
+        sa.Column('first_seen_at', sa.VARCHAR, nullable=False),
+        sa.Column('last_seen_at', sa.VARCHAR, nullable=False),
+        sa.Column('episodes', sa.ARRAY(sa.VARCHAR), nullable=False),
+    )
 
 def downgrade() -> None:
-    pass
+    op.drop_table('characters')
+
