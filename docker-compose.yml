@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: pipenv run uvicorn main:app --host 0.0.0.0
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+  
+  postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    volumes:
+      - ${PWD}/postgres-docker:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: velma-api
+      POSTGRES_PASSWORD: velma-api
+      POSTGRES_DB: velma-api
