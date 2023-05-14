@@ -10,3 +10,7 @@ docker-compose build
 docker-compose up -d
 docker-compose down
 ```
+
+# Environment Variables Documentation
+- https://itsjoshcampos.codes/fast-api-environment-variables#heading-read-environment-variables-in-fastapi
+- https://fastapi.tiangolo.com/advanced/settings/

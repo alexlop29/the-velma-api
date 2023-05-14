@@ -10,6 +10,7 @@ pydantic = "1.10.7"
 SQLAlchemy = "2.0.12"
 alembic = "1.10.4"
 psycopg2 = "2.9.6"
+httpx = "*"
 
 [dev-packages]
 
