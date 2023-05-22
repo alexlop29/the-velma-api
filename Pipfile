@@ -11,6 +11,8 @@ SQLAlchemy = "2.0.12"
 alembic = "1.10.4"
 psycopg2 = "2.9.6"
 httpx = "*"
+PyJWT = "2.7.0"
+cryptography = "40.0.2"
 
 [dev-packages]
 
