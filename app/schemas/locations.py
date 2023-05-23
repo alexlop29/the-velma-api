@@ -1,12 +1,12 @@
 from pydantic import BaseModel
 
-class EpisodeBase(BaseModel):
+class LocationBase(BaseModel):
     name: str
 
-class EpisodeCreate(EpisodeBase):
+class LocationCreate(LocationBase):
     pass
 
-class Episode(EpisodeBase):
+class Episode(LocationBase):
     location_id: int
 
     class Config:

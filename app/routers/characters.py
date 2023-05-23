@@ -1,6 +1,7 @@
 from fastapi import Depends, APIRouter, Response, status
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from schemas.characters import CharacterCreate as CharacterCreate
 from models.characters import Character as Character
 from config.db import SessionLocal, engine
@@ -16,6 +17,10 @@ def get_db():
     finally:
         db.close()
 
+@router.get("/character_count/", tags=["characters"])
+async def get_character_count(db: Session = Depends(get_db)):
+    return db.query(Character).count()
+
 @router.get("/characters/", tags=["characters"])
 async def get_characters(
         db: Session = Depends(get_db),
@@ -27,10 +32,10 @@ async def get_characters(
 
 @router.get("/character/", tags=["characters"])
 async def get_character(query: str, db: Session = Depends(get_db)):
-    return db.query(Character).filter(
+    return db.query(Character).filter(or_(
         Character.first_name.like(query),
-        Character.last_name.like(query)
-    )
+        Character.last_name.like(query))
+    ).all()
 
 @router.post("/character/", tags=["characters"])
 async def create_character(
@@ -45,13 +50,13 @@ async def create_character(
         response.status_code = status.HTTP_400_BAD_REQUEST
         return result
 
-    db_user = Character(
+    character_info = Character(
         first_name=character.first_name, 
         last_name=character.last_name,
         species=character.species,
         gender=character.gender
     )
-    db.add(db_user)
+    db.add(character_info )
     db.commit()
-    db.refresh(db_user)
-    return db_user
+    db.refresh(character_info)
+    return character_info

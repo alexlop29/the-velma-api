@@ -1,8 +1,8 @@
 from fastapi import Depends, APIRouter, Response, status
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
-from schemas.locations import LocationCreate as LocationCreate
-from models.locations import Location as Location
+from schemas.character_appearances_by_episode import CharacterByEpisdeCreate as CharacterByEpisdeCreate
+from models.character_appearances_by_episode import CharacterByEpisode as CharacterByEpisode
 from config.db import SessionLocal, engine
 from internal.validate import VerifyToken
 
@@ -16,18 +16,10 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/location_count/", tags=["locations"])
-async def get_location_count(db: Session = Depends(get_db)):
-    return db.query(Location).count()
-
-@router.get("/locations/", tags=["locations"])
-async def get_locations(db: Session = Depends(get_db)):
-    return db.query(Location).all()
-
-@router.post("/location/", tags=["locations"])
-async def create_location(
+@router.post("/characterbyepisode/", tags=["characterbyepisode"])
+async def create_character_by_episode(
         response: Response,
-        location: LocationCreate, 
+        character: CharacterByEpisdeCreate, 
         db: Session = Depends(get_db),
         token: str = Depends(token_auth_scheme)
     ):
@@ -37,10 +29,11 @@ async def create_location(
         response.status_code = status.HTTP_400_BAD_REQUEST
         return result
 
-    location_info = Location(
-        name=location.name
+    character_by_episode_info = CharacterByEpisode(
+        character_id=CharacterByEpisode.character_id, 
+        episode_id=CharacterByEpisode.episode_id
     )
-    db.add(location_info)
+    db.add(character_by_episode_info)
     db.commit()
-    db.refresh(location_info)
-    return location_info
+    db.refresh(character_by_episode_info)
+    return character_by_episode_info

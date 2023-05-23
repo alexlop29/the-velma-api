@@ -7,4 +7,4 @@ class Episode(Base):
 
     episode_id = Column(Integer, primary_key=True)
     name = Column(VARCHAR)
-    air_date = Column(DATE, primary_key=True)
+    air_date = Column(DATE)

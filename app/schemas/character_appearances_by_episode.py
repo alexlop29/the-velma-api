@@ -8,8 +8,7 @@ class CharacterByEpisdeCreate(CharacterByEpisodeBase):
     pass
 
 class CharacterByEpisode(CharacterByEpisodeBase):
-    character_id: int
-    episode_id: int
+    id: int
 
     class Config:
         orm_mode = True

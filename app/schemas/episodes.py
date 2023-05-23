@@ -1,8 +1,9 @@
-from pydantic import BaseModel, datetime
+from pydantic import BaseModel
+from datetime import date
 
 class EpisodeBase(BaseModel):
     name: str
-    air_date: datetime.date
+    air_date: date
 
 class EpisodeCreate(EpisodeBase):
     pass
