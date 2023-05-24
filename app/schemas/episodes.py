@@ -14,4 +14,3 @@ class Episode(EpisodeBase):
     class Config:
         orm_mode = True
 
-

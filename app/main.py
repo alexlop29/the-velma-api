@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from routers import characters, episodes, locations, characters_appearances_by_episodes
+from routers import characters, episodes, locations, characters_appearances_by_episodes, locations_visited_by_characters
 
 description = """
-Query informatiom about HBO Max's Velma
+Query information about HBO Max's Velma
 """
 
 app = FastAPI(
@@ -19,7 +19,8 @@ app.include_router(characters.router)
 app.include_router(episodes.router)
 app.include_router(locations.router)
 app.include_router(characters_appearances_by_episodes.router)
+app.include_router(locations_visited_by_characters.router)
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 async def root():
     return {"message": "the-velma-api"}

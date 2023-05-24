@@ -1,3 +1,5 @@
+""" Queries the Locations table """
+
 from fastapi import Depends, APIRouter, Response, status
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session

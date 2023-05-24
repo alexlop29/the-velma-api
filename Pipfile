@@ -13,6 +13,9 @@ psycopg2 = "2.9.6"
 httpx = "*"
 PyJWT = "2.7.0"
 cryptography = "40.0.2"
+pip-audit = "*"
+bandit = "*"
+pylint = "*"
 
 [dev-packages]
 

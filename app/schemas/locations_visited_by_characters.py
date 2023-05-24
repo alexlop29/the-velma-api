@@ -8,8 +8,7 @@ class LocationsByCharactersCreate(LocationsByCharactersBase):
     pass
 
 class LocationsByCharacters(LocationsByCharactersBase):
-    character_id: int
-    location_id: int
+    id: int
 
     class Config:
         orm_mode = True

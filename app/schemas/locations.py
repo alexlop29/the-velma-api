@@ -6,7 +6,7 @@ class LocationBase(BaseModel):
 class LocationCreate(LocationBase):
     pass
 
-class Episode(LocationBase):
+class Location(LocationBase):
     location_id: int
 
     class Config:
