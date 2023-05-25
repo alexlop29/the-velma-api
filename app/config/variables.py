@@ -1,10 +1,11 @@
 from pydantic import BaseSettings
+import os
 
 class Settings(BaseSettings):
-    DATABASE_URL="postgresql://velma-api:velma-api@postgres:5432/velma-api"
-    DOMAIN = "dev-xxn2763opsyx3347.us.auth0.com"
-    API_AUDIENCE = "https://the-velma-api.com"
-    ISSUER = "https://dev-xxn2763opsyx3347.us.auth0.com/"
+    DATABASE_URL=os.getenv("DATABASE_URL_2")
+    DOMAIN = os.getenv("DOMAIN")
+    API_AUDIENCE = os.getenv("API_AUDIENCE")
+    ISSUER = os.getenv("ISSUER")
     ALGORITHMS = "RS256"
 
 settings = Settings()
