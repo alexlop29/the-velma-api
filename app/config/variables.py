@@ -3,8 +3,7 @@ import os
 
 class Settings(BaseSettings):
     DATABASE_URL=os.getenv("DATABASE_URL")
-    if DATABASE_URL.startswith("postgres://"):
-        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    DATABASE_URL_2=os.getenv("DATABASE_URL_2")
     DOMAIN = os.getenv("DOMAIN")
     API_AUDIENCE = os.getenv("API_AUDIENCE")
     ISSUER = os.getenv("ISSUER")
