@@ -164,5 +164,4 @@ cython_debug/
 .jython_cache/*
 postgres-docker/*
 alembic.ini
-requirements.txt
 .terraform/*
