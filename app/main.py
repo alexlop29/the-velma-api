@@ -19,7 +19,7 @@ app = FastAPI(
 
 app.add_middleware(HTTPSRedirectMiddleware)
 app.add_middleware(
-    TrustedHostMiddleware, allowed_hosts=["thevelmashow.com", "*thevelmashow.com"]
+    TrustedHostMiddleware, allowed_hosts=["thevelmashow.com", "*.thevelmashow.com"]
 )
 
 app.include_router(characters.router)
