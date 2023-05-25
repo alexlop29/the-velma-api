@@ -24,8 +24,8 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/character_by_episode/", tags=["character_by_episode"])
-async def get_character_by_episode(
+@router.get("/episode_by_character/", tags=["episode_by_character"])
+async def get_episode_by_character(
         query: int,
         db: Session = Depends(get_db),
     ):
@@ -57,8 +57,8 @@ async def get_character_by_episode(
     
     return JSONResponse(content=jsonable_encoder(dict_of_results))
 
-@router.post("/character_by_episode/", tags=["character_by_episode"])
-async def create_character_by_episode(
+@router.post("/episode_by_character/", tags=["episode_by_character"])
+async def create_episode_by_character(
         response: Response,
         character_by_episode: CharacterByEpisodeCreate, 
         db: Session = Depends(get_db),

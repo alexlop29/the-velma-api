@@ -8,7 +8,7 @@ Query information about HBO Max's Velma
 app = FastAPI(
     title="the Velma API",
     description=description,
-    version="0.0.1",
+    version="1.0.0",
     contact={
         "name": "Alexander Lopez",
         "email": "alexander.lopez@owasp.org",

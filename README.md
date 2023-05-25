@@ -24,8 +24,8 @@ NOTE TO SELF:
 - Add filter to disregard case in query (get_character by name)
 - Remediate the pylint errors
 - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.EC2.html
-- Missing two girls in the shower scene in episode 1
-- BUG: post location_by_character returns all locations, as opposed to the newly created row
+- Missing two girls in the shower scene in episode 1 / also appear in spooner's malt shop / lola & becca 
+- BUG: post location_by_character returns all locations, as opposed to the newly created row 
 
 # Helpful SQL Queries
 ```
