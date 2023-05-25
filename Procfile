@@ -1,1 +1,1 @@
-web: cd app && uvicorn main:app
+worker: cd app && uvicorn main:app
