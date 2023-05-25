@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from routers import characters, episodes, locations, characters_appearances_by_episodes, locations_visited_by_characters
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 description = """
 Query information about HBO Max's Velma
@@ -13,6 +15,11 @@ app = FastAPI(
         "name": "Alexander Lopez",
         "email": "alexander.lopez@owasp.org",
     },
+)
+
+app.add_middleware(HTTPSRedirectMiddleware)
+app.add_middleware(
+    TrustedHostMiddleware, allowed_hosts=["thevelmashow.com", "*thevelmashow.com"]
 )
 
 app.include_router(characters.router)
