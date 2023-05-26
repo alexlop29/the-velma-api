@@ -24,16 +24,9 @@ def get_db():
     finally:
         db.close()
 
-responses = {
-    404: {"description": "Item not found"},
-    500: {"description": "Internal server error"},
-}
-
 @router.get(
     "/characters", 
-    tags=["characters"],
-    response_model=Character,
-    responses={**responses}
+    tags=["characters"]
 )
 async def get_characters(db: Session = Depends(get_db)):
     """ Returns a list of all characters """
