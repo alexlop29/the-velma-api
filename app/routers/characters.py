@@ -33,7 +33,7 @@ responses = {
     "/characters", 
     tags=["characters"],
     response_model=Character,
-    responses={**responses, 200: Character}
+    responses={**responses}
 )
 async def get_characters(db: Session = Depends(get_db)):
     """ Returns a list of all characters """
