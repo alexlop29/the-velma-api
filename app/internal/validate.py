@@ -1,7 +1,15 @@
 import jwt
-from sentry_sdk import capture_exception
 from config.variables import settings
+import sentry_sdk
+import functools
 
+def send_to_sentry(func):
+    @functools.wraps(func)
+    def inner(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as ex:
+            sentry_sdk.capture_message(ex)
 
 def set_up():
     """Sets up configuration for the app"""
@@ -14,7 +22,7 @@ def set_up():
     }
     return config
 
-
+@send_to_sentry
 class VerifyToken():
     """Does all the token verification using PyJWT"""
 
@@ -36,10 +44,8 @@ class VerifyToken():
                 self.token
             ).key
         except jwt.exceptions.PyJWKClientError as error:
-            capture_exception(error)
             return {"status": "error", "msg": error.__str__()}
         except jwt.exceptions.DecodeError as error:
-            capture_exception(error)
             return {"status": "error", "msg": error.__str__()}
 
         try: 
@@ -51,19 +57,16 @@ class VerifyToken():
                 issuer=self.config["ISSUER"],
             )
         except Exception as e:
-            capture_exception(e)
             return {"status": "error", "message": str(e)}
 
         if self.scopes:
             result = self._check_claims(payload, 'scope', str, self.scopes.split(' '))
             if result.get("error"):
-                capture_exception(result)
                 return result
 
         if self.permissions:
             result = self._check_claims(payload, 'permissions', list, self.permissions)
             if result.get("error"):
-                capture_exception(result)
                 return result
 
         return payload
@@ -81,7 +84,6 @@ class VerifyToken():
 
             result["code"] = f"missing_{claim_name}"
             result["msg"] = f"No claim '{claim_name}' found in token."
-            capture_exception(result)
             return result
 
         if claim_name == 'scope':
@@ -95,6 +97,5 @@ class VerifyToken():
                 result["code"] = f"insufficient_{claim_name}"
                 result["msg"] = (f"Insufficient {claim_name} ({value}). You don't have "
                                   "access to this resource")
-                capture_exception(result)
                 return result
         return result
