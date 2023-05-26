@@ -27,7 +27,4 @@ app.include_router(locations_visited_by_characters.router)
 
 @app.get("/", include_in_schema=False)
 async def root():
-    return {"message": "the-velma-api"}
-
-async def root():
     return RedirectResponse(url='/docs')
