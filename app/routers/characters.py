@@ -24,14 +24,21 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/characters", tags=["characters"], response_model=list[CharacterCreate])
+@router.get(
+        "/characters",
+        tags=["characters"], 
+        responses={
+            500: {"description": "Internal server error"}
+        },
+        response_model=list[CharacterCreate]
+    )
 async def get_characters(db: Session = Depends(get_db)):
     """ Returns a list of all characters """
     try:
         characters = db.query(Character).all()
     except exc.SQLAlchemyError as err:
         sentry_sdk.capture_message(type(err))
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail="Internal server error")
     return JSONResponse(content=jsonable_encoder(characters))
 
 @router.get("/characters/count", tags=["characters"], status_code=200)
