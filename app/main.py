@@ -17,6 +17,7 @@ sentry_sdk.init(
         StarletteIntegration(transaction_style="endpoint"),
         FastApiIntegration(transaction_style="endpoint")
     ],
+    traces_sample_rate=settings.TRACES_SAMPLE_RATE
 )
 
 description = """
