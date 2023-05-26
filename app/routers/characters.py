@@ -81,8 +81,6 @@ async def get_character(query: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Internal Server Error")
     return JSONResponse(content=jsonable_encoder(character_search))
 
-@router.post("/characters", tags=["characters"])
-
 @router.post(
         "/characters",
         tags=["characters"],
