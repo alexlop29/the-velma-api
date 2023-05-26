@@ -82,6 +82,16 @@ async def get_character(query: str, db: Session = Depends(get_db)):
     return JSONResponse(content=jsonable_encoder(character_search))
 
 @router.post("/characters", tags=["characters"])
+
+@router.post(
+        "/characters",
+        tags=["characters"],
+        responses={
+            500: {"description": "Internal server error"},
+            404: {"desciption": "Forbidden"}
+        },
+        response_model=CharacterCreate
+    )
 async def create_character(
         response: Response,
         character: CharacterCreate,
@@ -92,7 +102,8 @@ async def create_character(
     result = VerifyToken(token.credentials).verify()
     if result.get("status"):
         response.status_code = status.HTTP_400_BAD_REQUEST
-        return result
+        sentry_sdk.capture_message(result)
+        raise HTTPException(status_code=404, detail="Forbidden")
 
     character_info = Character(
         first_name=character.first_name,
@@ -100,7 +111,13 @@ async def create_character(
         species=character.species,
         gender=character.gender
     )
-    db.add(character_info )
-    db.commit()
-    db.refresh(character_info)
+
+    try:
+        db.add(character_info )
+        db.commit()
+        db.refresh(character_info)
+    except exc.SQLAlchemyError as err:
+        sentry_sdk.capture_message(type(err))
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    
     return character_info
