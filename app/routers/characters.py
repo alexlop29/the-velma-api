@@ -24,6 +24,15 @@ def get_db():
     finally:
         db.close()
 
+@router.get("/characters", tags=["characters"])
+async def get_characters(db: Session = Depends(get_db)):
+    try:
+        characters = db.query(Character).all()
+    except exc.SQLAlchemyError as err:
+        sentry_sdk.capture_message(type(err))
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    return JSONResponse(content=jsonable_encoder(characters))
+
 @router.get("/characters/count", tags=["characters"], status_code=200)
 async def get_count_of_characters(db: Session = Depends(get_db)):
     """ Returns a count of characters """
@@ -37,21 +46,12 @@ async def get_count_of_characters(db: Session = Depends(get_db)):
     }
     return JSONResponse(content=jsonable_encoder(count_to_json))
 
-@router.get("/characters", tags=["characters"])
-async def get_characters(db: Session = Depends(get_db)):
-    try:
-        characters = db.query(Character).all()
-    except exc.SQLAlchemyError as err:
-        sentry_sdk.capture_message(type(err))
-        raise HTTPException(status_code=500, detail="Internal Server Error")
-    return JSONResponse(content=jsonable_encoder(characters))
-
 @router.get("/characters/search", tags=["characters"])
 async def get_character(query: str, db: Session = Depends(get_db)):
     try:
         character_search = db.query(Character).filter(or_(
-        Character.first_name.ilike(query),
-        Character.last_name.ilike(query))
+        Character.first_name.ilike(f'%{query}%'),
+        Character.last_name.ilike(f'%{query}%'))
         ).all()
     except exc.SQLAlchemyError as err:
         sentry_sdk.capture_message(type(err))
