@@ -2,14 +2,7 @@ import jwt
 from config.variables import settings
 import sentry_sdk
 import functools
-
-def send_to_sentry(func):
-    @functools.wraps(func)
-    def inner(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as ex:
-            sentry_sdk.capture_message(ex)
+from fastapi import HTTPException
 
 def set_up():
     """Sets up configuration for the app"""
@@ -22,20 +15,23 @@ def set_up():
     }
     return config
 
-@send_to_sentry
 class VerifyToken():
     """Does all the token verification using PyJWT"""
 
     def __init__(self, token, permissions=None, scopes=None):
-        self.token = token
-        self.permissions = permissions
-        self.scopes = scopes
-        self.config = set_up()
+        try:
+            self.token = token
+            self.permissions = permissions
+            self.scopes = scopes
+            self.config = set_up()
 
         # This gets the JWKS from a given URL and does processing so you can use any of
         # the keys available
-        jwks_url = f'https://{self.config["DOMAIN"]}/.well-known/jwks.json'
-        self.jwks_client = jwt.PyJWKClient(jwks_url)
+            jwks_url = f'https://{self.config["DOMAIN"]}/.well-known/jwks.json'
+            self.jwks_client = jwt.PyJWKClient(jwks_url)
+        except Exception as err:
+            sentry_sdk.capture_message(err)
+            raise HTTPException(status_code=403, detail="Forbidden")
 
     def verify(self):
         # This gets the 'kid' from the passed token
