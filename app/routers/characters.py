@@ -88,7 +88,7 @@ async def get_character(query: str, db: Session = Depends(get_db)):
             500: {"description": "Internal server error"},
             404: {"desciption": "Forbidden"}
         },
-        response_model=CharacterCreate
+        response_model=list[CharacterCreate]
     )
 async def create_character(
         response: Response,
@@ -102,14 +102,12 @@ async def create_character(
         response.status_code = status.HTTP_400_BAD_REQUEST
         sentry_sdk.capture_message(result)
         raise HTTPException(status_code=404, detail="Forbidden")
-
     character_info = Character(
         first_name=character.first_name,
         last_name=character.last_name,
         species=character.species,
         gender=character.gender
     )
-
     try:
         db.add(character_info )
         db.commit()
@@ -117,5 +115,4 @@ async def create_character(
     except exc.SQLAlchemyError as err:
         sentry_sdk.capture_message(type(err))
         raise HTTPException(status_code=500, detail="Internal Server Error")
-    
     return character_info
