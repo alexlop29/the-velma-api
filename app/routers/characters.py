@@ -12,6 +12,7 @@ from models.characters import Character
 from config.db import SessionLocal
 from internal.validate import VerifyToken
 import sentry_sdk
+from pydantic import ValidationError
 
 router = APIRouter()
 
@@ -98,12 +99,18 @@ async def create_character(
     ):
     """ Creates a character """
     result = VerifyToken(token.credentials).verify()
-    character_info = Character(
-        first_name=character.first_name,
-        last_name=character.last_name,
-        species=character.species,
-        gender=character.gender
-    )
+
+    try:
+        character_info = Character(
+            first_name=character.first_name,
+            last_name=character.last_name,
+            species=character.species,
+            gender=character.gender
+        )
+    except ValidationError as e:
+        sentry_sdk.capture_message(e)
+        raise HTTPException(status_code=422, detail=e)
+    
     db.add(character_info )
     db.commit()
     db.refresh(character_info)
