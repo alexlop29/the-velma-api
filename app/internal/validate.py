@@ -34,10 +34,12 @@ class VerifyToken():
             self.signing_key = self.jwks_client.get_signing_key_from_jwt(
                 self.token
             ).key
-        except jwt.exceptions.PyJWKClientError as error:
-            return {"status": "error", "msg": error.__str__()}
-        except jwt.exceptions.DecodeError as error:
-            return {"status": "error", "msg": error.__str__()}
+        except Exception as err:
+            return "OMG"
+        # except jwt.exceptions.PyJWKClientError as error:
+        #     return {"status": "error", "msg": error.__str__()}
+        # except jwt.exceptions.DecodeError as error:
+        #     return {"status": "error", "msg": error.__str__()}
 
         try: 
             payload = jwt.decode(
@@ -48,7 +50,7 @@ class VerifyToken():
                 issuer=self.config["ISSUER"],
             )
         except Exception as e:
-            return {"status": "error", "message": "hehe"}
+            return {"status": "error", "message": str(e)}
 
         if self.scopes:
             result = self._check_claims(payload, 'scope', str, self.scopes.split(' '))
