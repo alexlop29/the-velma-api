@@ -15,11 +15,10 @@ import sentry_sdk
 
 router = APIRouter()
 
-def get_http_bearer():
-    try:
-        return HTTPBearer()
-    except Exception as err:
-        print("OMG")
+try:
+    token_auth_scheme = HTTPBearer()
+except Exception as err:
+    print("OMG")
 
 def get_db():
     """ Establishes a connection to the database """
@@ -98,7 +97,7 @@ async def create_character(
         response: Response,
         character: CharacterCreate,
         db: Session = Depends(get_db),
-        token: str = get_http_bearer()
+        token: str = Depends(token_auth_scheme)
     ):
     """ Creates a character """
     result = VerifyToken(token.credentials).verify()
