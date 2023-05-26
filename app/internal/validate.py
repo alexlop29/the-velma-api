@@ -35,7 +35,6 @@ class VerifyToken():
                 self.token
             ).key
         except jwt.exceptions.PyJWKClientError as error:
-            sentry_sdk.capture_message(error)
             return {"status": "error", "msg": error.__str__()}
         except jwt.exceptions.DecodeError as error:
             return {"status": "error", "msg": error.__str__()}
@@ -49,6 +48,7 @@ class VerifyToken():
                 issuer=self.config["ISSUER"],
             )
         except Exception as e:
+            sentry_sdk.capture_message(e)
             return {"status": "error", "message": str(e)}
 
         if self.scopes:
