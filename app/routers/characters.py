@@ -98,8 +98,10 @@ async def create_character(
     ):
     """ Creates a character """
     result = VerifyToken(token.credentials).verify()
-    if result.get("status"):
-        sentry_sdk.capture_message(result)
+    try:
+        result = VerifyToken(token.credentials).verify()
+    except Exception as err:
+        sentry_sdk.capture_message(HTTPException(status_code=403, detail="Forbidden"))
         raise HTTPException(status_code=403, detail="Forbidden")
     character_info = Character(
         first_name=character.first_name,
