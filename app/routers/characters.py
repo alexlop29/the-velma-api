@@ -41,7 +41,14 @@ async def get_characters(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Internal server error")
     return JSONResponse(content=jsonable_encoder(characters))
 
-@router.get("/characters/count", tags=["characters"], status_code=200)
+@router.get(
+        "/characters/count",
+        tags=["characters"],
+        responses={
+            200: {"count": "int"},
+            500: {"description": "Internal server error"}
+        }
+    )
 async def get_count_of_characters(db: Session = Depends(get_db)):
     """ Returns a count of characters """
     try:
@@ -54,7 +61,14 @@ async def get_count_of_characters(db: Session = Depends(get_db)):
     }
     return JSONResponse(content=jsonable_encoder(count_to_json))
 
-@router.get("/characters/search", tags=["characters"])
+@router.get(
+        "/characters/search",
+        tags=["characters"],
+        responses={
+            500: {"description": "Internal server error"}
+        },
+        response_model=list[CharacterCreate]
+    )
 async def get_character(query: str, db: Session = Depends(get_db)):
     """ Returns a list of characters matching the search string """
     try:
