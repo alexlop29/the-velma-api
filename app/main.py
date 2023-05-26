@@ -4,11 +4,17 @@ from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.responses import RedirectResponse
 from config.variables import settings
 import sentry_sdk
+from sentry_sdk.integrations.starlette import StarletteIntegration
+from sentry_sdk.integrations.fastapi import FastApiIntegration
 
 sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
     environment=settings.SENTRY_ENVIRONMENT,
-    traces_sample_rate=settings.TRACES_SAMPLE_RATE
+    traces_sample_rate=settings.TRACES_SAMPLE_RATE,
+    integrations=[
+        StarletteIntegration(transaction_style="endpoint"),
+        FastApiIntegration(transaction_style="endpoint"),
+    ]
 )
 
 description = """
