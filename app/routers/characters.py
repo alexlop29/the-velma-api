@@ -14,7 +14,12 @@ from internal.validate import VerifyToken
 import sentry_sdk
 
 router = APIRouter()
-token_auth_scheme = HTTPBearer()
+
+def get_http_bearer():
+    try:
+        return HTTPBearer()
+    except Exception as err:
+        print("OMG")
 
 def get_db():
     """ Establishes a connection to the database """
@@ -93,14 +98,10 @@ async def create_character(
         response: Response,
         character: CharacterCreate,
         db: Session = Depends(get_db),
-        token: str = Depends(token_auth_scheme)
+        token: str = Depends(get_http_bearer)
     ):
     """ Creates a character """
-    try:
-        bob = token.credentials
-    except Exception as err:
-        return "bob"
-    result = VerifyToken(bob).verify()
+    result = VerifyToken(token.credentials).verify()
     character_info = Character(
         first_name=character.first_name,
         last_name=character.last_name,
