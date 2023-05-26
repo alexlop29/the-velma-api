@@ -1,13 +1,17 @@
 """ Queries the Characters table """
 
-from fastapi import Depends, APIRouter, Response, status
+from fastapi import Depends, APIRouter, Response, status, HTTPException
 from fastapi.security import HTTPBearer
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
+from sqlalchemy import exc
 from schemas.characters import CharacterCreate
 from models.characters import Character
 from config.db import SessionLocal, engine
 from internal.validate import VerifyToken
+import sentry_sdk
 
 router = APIRouter()
 token_auth_scheme  = HTTPBearer()
@@ -20,13 +24,18 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/sentry-debug")
-async def trigger_error():
-    division_by_zero = 1 / 0
-
-@router.get("/character_count/", tags=["characters"])
-async def get_character_count(db: Session = Depends(get_db)):
-    return db.query(Character).count()
+@router.get("/characters/count", tags=["characters"])
+async def get_count_of_characters(db: Session = Depends(get_db)):
+    """ Returns a count of characters """
+    try:
+      count = db.query(Character).count()
+    except exc.SQLAlchemyError as err:
+        sentry_sdk.capture_message(type(err))
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    count_to_json = {
+        'count':count
+    }
+    return JSONResponse(content=jsonable_encoder(count_to_json))
 
 @router.get("/characters/", tags=["characters"])
 async def get_characters(
