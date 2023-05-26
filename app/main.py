@@ -6,6 +6,7 @@ from config.variables import settings
 import sentry_sdk
 from sentry_sdk.integrations.starlette import StarletteIntegration
 from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
@@ -14,6 +15,7 @@ sentry_sdk.init(
     integrations=[
         StarletteIntegration(transaction_style="endpoint"),
         FastApiIntegration(transaction_style="endpoint"),
+        SqlalchemyIntegration()
     ]
 )
 
