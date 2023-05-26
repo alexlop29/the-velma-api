@@ -104,11 +104,7 @@ async def create_character(
         species=character.species,
         gender=character.gender
     )
-    try:
-        db.add(character_info )
-        db.commit()
-        db.refresh(character_info)
-    except exc.SQLAlchemyError as err:
-        sentry_sdk.capture_message(type(err))
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+    db.add(character_info )
+    db.commit()
+    db.refresh(character_info)
     return character_info
