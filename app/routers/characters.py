@@ -45,7 +45,7 @@ async def get_characters(db: Session = Depends(get_db)):
         "/characters/count",
         tags=["characters"],
         responses={
-            200: {"count": "int"},
+            200: {"description": "Successful response"},
             500: {"description": "Internal server error"}
         }
     )
