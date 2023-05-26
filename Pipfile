@@ -16,6 +16,8 @@ cryptography = "40.0.2"
 pip-audit = "*"
 bandit = "*"
 pylint = "*"
+sentry-sdk[fastapi] = "1.24.0"
+sentry-sdk[sqlalchemy]= "1.24.0"
 
 [dev-packages]
 

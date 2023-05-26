@@ -7,5 +7,6 @@ class Settings(BaseSettings):
     API_AUDIENCE = os.getenv("API_AUDIENCE")
     ISSUER = os.getenv("ISSUER")
     ALGORITHMS = "RS256"
+    SENTRY_DSN = os.getenv("SENTRY_DSN")
 
 settings = Settings()
