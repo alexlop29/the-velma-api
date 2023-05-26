@@ -9,7 +9,7 @@ from sqlalchemy import or_
 from sqlalchemy import exc
 from schemas.characters import CharacterCreate
 from models.characters import Character
-from config.db import SessionLocal, engine
+from config.db import SessionLocal
 from internal.validate import VerifyToken
 import sentry_sdk
 
@@ -24,8 +24,19 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/characters", tags=["characters"])
+responses = {
+    404: {"description": "Item not found"},
+    500: {"description": "Internal server error"},
+}
+
+@router.get(
+    "/characters", 
+    tags=["characters"],
+    response_model=Character,
+    responses={**responses, 200: Character}
+)
 async def get_characters(db: Session = Depends(get_db)):
+    """ Returns a list of all characters """
     try:
         characters = db.query(Character).all()
     except exc.SQLAlchemyError as err:
@@ -37,7 +48,7 @@ async def get_characters(db: Session = Depends(get_db)):
 async def get_count_of_characters(db: Session = Depends(get_db)):
     """ Returns a count of characters """
     try:
-      count = db.query(Character).count()
+        count = db.query(Character).count()
     except exc.SQLAlchemyError as err:
         sentry_sdk.capture_message(type(err))
         raise HTTPException(status_code=500, detail="Internal Server Error")
@@ -48,6 +59,7 @@ async def get_count_of_characters(db: Session = Depends(get_db)):
 
 @router.get("/characters/search", tags=["characters"])
 async def get_character(query: str, db: Session = Depends(get_db)):
+    """ Returns a list of characters matching the search string """
     try:
         character_search = db.query(Character).filter(or_(
         Character.first_name.ilike(f'%{query}%'),
@@ -58,14 +70,14 @@ async def get_character(query: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Internal Server Error")
     return JSONResponse(content=jsonable_encoder(character_search))
 
-@router.post("/character/", tags=["characters"])
+@router.post("/characters", tags=["characters"])
 async def create_character(
         response: Response,
         character: CharacterCreate,
         db: Session = Depends(get_db),
         token: str = Depends(token_auth_scheme)
     ):
-
+    """ Creates a character """
     result = VerifyToken(token.credentials).verify()
     if result.get("status"):
         response.status_code = status.HTTP_400_BAD_REQUEST
