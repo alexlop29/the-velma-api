@@ -98,7 +98,7 @@ async def create_character(
         response: Response,
         character: CharacterCreate,
         db: Session = Depends(get_db),
-        token: str = Depends(get_http_bearer)
+        token: str = get_http_bearer()
     ):
     """ Creates a character """
     result = VerifyToken(token.credentials).verify()
