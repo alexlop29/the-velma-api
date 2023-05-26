@@ -8,5 +8,6 @@ class Settings(BaseSettings):
     ISSUER = os.getenv("ISSUER")
     ALGORITHMS = "RS256"
     SENTRY_DSN = os.getenv("SENTRY_DSN")
+    SENTRY_ENVIRONMENT  = os.getenv("SENTRY_ENVIRONMENT")
 
 settings = Settings()
