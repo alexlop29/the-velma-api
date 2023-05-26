@@ -1,6 +1,7 @@
 import jwt
-import sentry_sdk
+from sentry_sdk import capture_exception
 from config.variables import settings
+
 
 def set_up():
     """Sets up configuration for the app"""
@@ -35,10 +36,10 @@ class VerifyToken():
                 self.token
             ).key
         except jwt.exceptions.PyJWKClientError as error:
-            sentry_sdk.capture_message(error)
+            capture_exception(error)
             return {"status": "error", "msg": error.__str__()}
         except jwt.exceptions.DecodeError as error:
-            sentry_sdk.capture_message(error)
+            capture_exception(error)
             return {"status": "error", "msg": error.__str__()}
 
         try: 
@@ -50,19 +51,19 @@ class VerifyToken():
                 issuer=self.config["ISSUER"],
             )
         except Exception as e:
-            sentry_sdk.capture_message(e)
+            capture_exception(e)
             return {"status": "error", "message": str(e)}
 
         if self.scopes:
             result = self._check_claims(payload, 'scope', str, self.scopes.split(' '))
             if result.get("error"):
-                sentry_sdk.capture_message(result)
+                capture_exception(result)
                 return result
 
         if self.permissions:
             result = self._check_claims(payload, 'permissions', list, self.permissions)
             if result.get("error"):
-                sentry_sdk.capture_message(result)
+                capture_exception(result)
                 return result
 
         return payload
@@ -80,6 +81,7 @@ class VerifyToken():
 
             result["code"] = f"missing_{claim_name}"
             result["msg"] = f"No claim '{claim_name}' found in token."
+            capture_exception(result)
             return result
 
         if claim_name == 'scope':
@@ -93,6 +95,6 @@ class VerifyToken():
                 result["code"] = f"insufficient_{claim_name}"
                 result["msg"] = (f"Insufficient {claim_name} ({value}). You don't have "
                                   "access to this resource")
-                sentry_sdk.capture_message(result)
+                capture_exception(result)
                 return result
         return result
