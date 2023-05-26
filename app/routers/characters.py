@@ -85,8 +85,7 @@ async def get_character(query: str, db: Session = Depends(get_db)):
         "/characters",
         tags=["characters"],
         responses={
-            500: {"description": "Internal server error"},
-            403: {"desciption": "Forbidden"}
+            500: {"description": "Internal server error"}
         },
         response_model=list[CharacterCreate]
     )
@@ -98,11 +97,6 @@ async def create_character(
     ):
     """ Creates a character """
     result = VerifyToken(token.credentials).verify()
-    try:
-        result = VerifyToken(token.credentials).verify()
-    except Exception as err:
-        sentry_sdk.capture_message(HTTPException(status_code=403, detail="Forbidden"))
-        raise HTTPException(status_code=403, detail="Forbidden")
     character_info = Character(
         first_name=character.first_name,
         last_name=character.last_name,

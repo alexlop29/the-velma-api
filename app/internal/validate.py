@@ -1,4 +1,5 @@
 import jwt
+import sentry_sdk
 from config.variables import settings
 
 def set_up():
@@ -34,6 +35,7 @@ class VerifyToken():
                 self.token
             ).key
         except jwt.exceptions.PyJWKClientError as error:
+            sentry_sdk.capture_message(error)
             return {"status": "error", "msg": error.__str__()}
         except jwt.exceptions.DecodeError as error:
             return {"status": "error", "msg": error.__str__()}
