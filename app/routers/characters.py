@@ -99,7 +99,6 @@ async def create_character(
     """ Creates a character """
     result = VerifyToken(token.credentials).verify()
     if result.get("status"):
-        response.status_code = status.HTTP_400_BAD_REQUEST
         sentry_sdk.capture_message(result)
         raise HTTPException(status_code=404, detail="Forbidden")
     character_info = Character(
