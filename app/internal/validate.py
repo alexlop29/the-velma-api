@@ -2,7 +2,6 @@ import jwt
 from config.variables import settings
 import sentry_sdk
 import functools
-from fastapi import HTTPException
 
 def set_up():
     """Sets up configuration for the app"""
@@ -35,13 +34,10 @@ class VerifyToken():
             self.signing_key = self.jwks_client.get_signing_key_from_jwt(
                 self.token
             ).key
-        except Exception as err:
-            sentry_sdk.capture_message(err)
-            raise HTTPException(status_code=500, detail="Internal Server Error")
         except jwt.exceptions.PyJWKClientError as error:
-            return {"status": "error", "msg": error.__str__()}
+            return {"status": "error", "msg": "hehe"}
         except jwt.exceptions.DecodeError as error:
-            return {"status": "error", "msg": error.__str__()}
+            return {"status": "error", "msg": "haha"}
 
         try: 
             payload = jwt.decode(
