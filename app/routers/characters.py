@@ -20,6 +20,10 @@ def get_db():
     finally:
         db.close()
 
+@router.get("/sentry-debug")
+async def trigger_error():
+    division_by_zero = 1 / 0
+
 @router.get("/character_count/", tags=["characters"])
 async def get_character_count(db: Session = Depends(get_db)):
     return db.query(Character).count()
