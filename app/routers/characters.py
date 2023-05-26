@@ -24,7 +24,7 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/characters", tags=["characters"], response_model=list[Character])
+@router.get("/characters", tags=["characters"], response_model=list[CharacterCreate])
 async def get_characters(db: Session = Depends(get_db)):
     """ Returns a list of all characters """
     try:
