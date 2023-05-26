@@ -35,8 +35,10 @@ class VerifyToken():
                 self.token
             ).key
         except jwt.exceptions.PyJWKClientError as error:
+            sentry_sdk.capture_message(error)
             return {"status": "error", "msg": error.__str__()}
         except jwt.exceptions.DecodeError as error:
+            sentry_sdk.capture_message(error)
             return {"status": "error", "msg": error.__str__()}
 
         try: 
@@ -54,11 +56,13 @@ class VerifyToken():
         if self.scopes:
             result = self._check_claims(payload, 'scope', str, self.scopes.split(' '))
             if result.get("error"):
+                sentry_sdk.capture_message(result)
                 return result
 
         if self.permissions:
             result = self._check_claims(payload, 'permissions', list, self.permissions)
             if result.get("error"):
+                sentry_sdk.capture_message(result)
                 return result
 
         return payload
@@ -89,5 +93,6 @@ class VerifyToken():
                 result["code"] = f"insufficient_{claim_name}"
                 result["msg"] = (f"Insufficient {claim_name} ({value}). You don't have "
                                   "access to this resource")
+                sentry_sdk.capture_message(result)
                 return result
         return result
