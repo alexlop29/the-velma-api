@@ -34,14 +34,13 @@ def get_db():
         },
         response_model=list[CharacterCreate]
     )
-async def get_characters(db: Session = Depends(get_db), response = Response):
+async def get_characters(db: Session = Depends(get_db)):
     """ Returns a list of all characters """
     try:
         characters = db.query(Character).all()
     except exc.SQLAlchemyError as err:
-        sentry_sdk.capture_message(err)
-        response.status_code = 500
-        return HTTPException(status_code=500, detail="Internal server error")
+        sentry_sdk.capture_message(type(err))
+        raise HTTPException(status_code=500, detail="Internal server error")
     return JSONResponse(content=jsonable_encoder(characters))
 
 @router.get(
@@ -52,14 +51,13 @@ async def get_characters(db: Session = Depends(get_db), response = Response):
             500: {"description": "Internal server error"}
         }
     )
-async def get_count_of_characters(db: Session = Depends(get_db), response = Response):
+async def get_count_of_characters(db: Session = Depends(get_db)):
     """ Returns a count of characters """
     try:
         count = db.query(Character).count()
     except exc.SQLAlchemyError as err:
-        sentry_sdk.capture_message(err)
-        response.status_code = 500
-        return HTTPException(status_code=500, detail="Internal server error")
+        sentry_sdk.capture_message(type(err))
+        raise HTTPException(status_code=500, detail="Internal Server Error")
     count_to_json = {
         'count':count
     }
@@ -73,7 +71,7 @@ async def get_count_of_characters(db: Session = Depends(get_db), response = Resp
         },
         response_model=list[CharacterCreate]
     )
-async def get_character(query: str, response = Response, db: Session = Depends(get_db)):
+async def get_character(query: str, db: Session = Depends(get_db)):
     """ Returns a list of characters matching the search string """
     try:
         character_search = db.query(Character).filter(or_(
@@ -81,9 +79,8 @@ async def get_character(query: str, response = Response, db: Session = Depends(g
         Character.last_name.ilike(f'%{query}%'))
         ).all()
     except exc.SQLAlchemyError as err:
-        sentry_sdk.capture_message(err)
-        response.status_code = 500
-        return HTTPException(status_code=500, detail="Internal server error")
+        sentry_sdk.capture_message(type(err))
+        raise HTTPException(status_code=500, detail="Internal Server Error")
     return JSONResponse(content=jsonable_encoder(character_search))
 
 @router.post(
@@ -112,8 +109,8 @@ async def create_character(
         )
     except Exception as error:
         sentry_sdk.capture_message(error)
-        response.status_code = 500
-        return HTTPException(status_code=500, detail="Internal server error")
+        return {"status": "error", "msg": error.__str__()}
+    
     db.add(character_info )
     db.commit()
     db.refresh(character_info)
@@ -146,7 +143,7 @@ async def delete_character(
     except Exception as error:
         sentry_sdk.capture_message(error)
         response.status_code = 500
-        return HTTPException(status_code=500, detail="Internal server error")
+        return HTTPException(status_code=500, detail="Internal server")
     return JSONResponse(
         content=jsonable_encoder(
             {"description": "Successful response"}
