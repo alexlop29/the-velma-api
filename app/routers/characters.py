@@ -121,7 +121,8 @@ async def create_character(
         tags=["characters"],
         responses={
             500: {"description": "Internal server error"},
-            200: {"description": "Successful response"}
+            200: {"description": "Successful response"},
+            404: {"description": "Not found"}
         }
     )
 async def delete_character(
@@ -132,8 +133,13 @@ async def delete_character(
     ):
     result = VerifyToken(token.credentials).verify()
     try:
-        deleted_character = db.query(Character).filter_by(character_id=id).delete()
-        db.commit()
+        character_to_delete = db.query(Character).filter_by(character_id=id)
+        if character_to_delete:
+            character_to_delete.delete()
+            db.commit()
+        else:
+            sentry_sdk.capture_message(character_to_delete)
+            return HTTPException(status_code=404, detail="Not found")
     except Exception as error:
         sentry_sdk.capture_message(error)
         return {"status": "error", "msg": error.__str__()}
