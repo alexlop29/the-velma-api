@@ -1,12 +1,15 @@
 """ Queries the Locations table """
 
-from fastapi import Depends, APIRouter, Response, status
+from fastapi import Depends, APIRouter, Response, status, HTTPException
 from fastapi.security import HTTPBearer
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from schemas.locations import LocationCreate as LocationCreate
 from models.locations import Location as Location
 from config.db import SessionLocal, engine
 from internal.validate import VerifyToken
+import sentry_sdk
 
 router = APIRouter()
 token_auth_scheme  = HTTPBearer()
@@ -18,13 +21,27 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/location_count/", tags=["locations"])
+@router.get(
+    "/locations/",
+    tags=["locations"],
+    responses={
+        500: {"description": "Internal server error"}
+    },
+    response_model=list[LocationCreate]
+)
+async def get_locations(response: Response, db: Session = Depends(get_db)):
+    """ Returns a list of all episodes """
+    try:
+        locations = db.query(Location).all()
+    except Exception as error:
+        sentry_sdk.capture_message(error)
+        response.status_code = 500
+        return  HTTPException(status_code=500, detail="Internal server error")
+    return JSONResponse(content=jsonable_encoder(locations))
+
+@router.get("/locations/count", tags=["locations"])
 async def get_location_count(db: Session = Depends(get_db)):
     return db.query(Location).count()
-
-@router.get("/locations/", tags=["locations"])
-async def get_locations(db: Session = Depends(get_db)):
-    return db.query(Location).all()
 
 @router.post("/location/", tags=["locations"])
 async def create_location(
