@@ -1,8 +1,9 @@
-from fastapi import Depends, APIRouter, Response, status
+from fastapi import Depends, APIRouter, Response, status, HTTPException
 from fastapi.security import HTTPBearer
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
+from sqlalchemy import exc
 from schemas.character_appearances_by_episode import CharacterByEpisodeCreate as CharacterByEpisodeCreate
 from models.character_appearances_by_episode import CharacterByEpisode as CharacterByEpisode
 from models.characters import Character as Character
@@ -12,7 +13,7 @@ from internal.validate import VerifyToken
 from sqlalchemy import select
 import json
 from fastapi.responses import JSONResponse
-
+import sentry_sdk
 
 router = APIRouter()
 token_auth_scheme  = HTTPBearer()
@@ -24,28 +25,30 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/episode_by_character/", tags=["episode_by_character"])
+@router.get("/episode_appearances/{character_id}", tags=["episode_apperances"])
 async def get_episode_by_character(
-        query: int,
+        id: int,
+        response: Response, 
         db: Session = Depends(get_db),
     ):
-
-    characters_by_episode = db.query(
-        Character.character_id, 
-        Character.first_name, 
-        Character.last_name, 
-        CharacterByEpisode.episode_id,
-        Episode.name
+    try:
+        characters_by_episode = db.query(
+            Character.character_id, 
+            Character.first_name, 
+            Character.last_name, 
+            CharacterByEpisode.episode_id,
+            Episode.name
         ) \
         .join(Character, Character.character_id == CharacterByEpisode.character_id) \
         .join(Episode, CharacterByEpisode.episode_id == Episode.episode_id) \
-        .filter(Character.character_id == query) \
+        .filter(Character.character_id == id) \
         .all()
-    
+    except exc.SQLAlchemyError as error:
+        sentry_sdk.capture_message(error)
+        response.status_code=500
+        return HTTPException(status_code=500, detail="Internal server")
     results = [tuple(row) for row in characters_by_episode]
-
     dict_of_results = []
-
     for row in results:
         dict_of_results.append({
             'character_id':row[0],
@@ -54,10 +57,9 @@ async def get_episode_by_character(
             'episode_id':row[3],
             'episode_name':row[4]
         })
-    
     return JSONResponse(content=jsonable_encoder(dict_of_results))
 
-@router.post("/episode_by_character/", tags=["episode_by_character"])
+@router.post("/episode_by_character/", tags=["episode_appearances"])
 async def create_episode_by_character(
         response: Response,
         character_by_episode: CharacterByEpisodeCreate, 
