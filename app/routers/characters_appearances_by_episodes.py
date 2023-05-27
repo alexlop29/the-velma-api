@@ -34,7 +34,7 @@ def get_db():
         404: {"description": "Not found"}
     }
 )
-async def get_episode_by_character(
+async def get_episode_appearances_by_character(
         id: int,
         response: Response, 
         db: Session = Depends(get_db),
@@ -79,7 +79,7 @@ async def get_episode_by_character(
     },
     response_model=list[CharacterByEpisodeCreate]
 )
-async def create_episode_by_character(
+async def create_episode_appearances_by_character(
         response: Response,
         character_by_episode: CharacterByEpisodeCreate, 
         db: Session = Depends(get_db),
@@ -96,14 +96,6 @@ async def create_episode_by_character(
         sentry_sdk.capture_message(error)
         response.status_code = 404
         return HTTPException(status_code=404, detail="Not found")
-    except ValidationError as error:
-        sentry_sdk.capture_message(error)
-        response.status_code=422
-        return {"status": "error", "msg": error.__str__()}
-    except Exception as error:
-        sentry_sdk.capture_message(error)
-        response.status_code = 500
-        return HTTPException(status_code=500, detail="Internal server error")
     character_info.episodes.append(episode_info)
     db.add(character_info)
     db.commit()
