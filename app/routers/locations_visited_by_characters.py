@@ -74,7 +74,7 @@ async def get_location_appearances_by_character(
         404: {"description": "Not found"}
     }
 )
-async def create_location_by_character(
+async def create_location_appearances_by_character(
         response: Response,
         location_by_character: LocationsByCharactersCreate, 
         db: Session = Depends(get_db),

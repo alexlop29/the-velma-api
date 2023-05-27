@@ -88,8 +88,7 @@ async def get_character(query: str, db: Session = Depends(get_db)):
         tags=["characters"],
         responses={
             500: {"description": "Internal server error"}
-        },
-        response_model=list[CharacterCreate]
+        }
     )
 async def create_character(
         response: Response,
