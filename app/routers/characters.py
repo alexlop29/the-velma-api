@@ -132,10 +132,9 @@ async def delete_character(
     ):
     result = VerifyToken(token.credentials).verify()
     try:
-        deleted_character = Character.query.filter_by(character_id=id).delete()
+        deleted_character = db.query(Character).filter_by(character_id=id).delete()
         db.commit()
-        return JSONResponse(content=jsonable_encoder(deleted_character))
     except Exception as error:
         sentry_sdk.capture_message(error)
         return {"status": "error", "msg": error.__str__()}
-
+    return JSONResponse(content=jsonable_encoder(deleted_character))
