@@ -16,3 +16,4 @@ NOTE TO SELF:
 - May want to create baby velma and baby daphne
 - BUG: post location_by_character returns all locations, as opposed to the newly created row 
 - Need to return to finish error handling in /characters
+- Need to test passing invalid token

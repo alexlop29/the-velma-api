@@ -99,7 +99,9 @@ async def create_character(
     ):
     """ Creates a character """
     result = VerifyToken(token.credentials).verify()
-
+    if result.get("status"):
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return result
     try:
         character_info = Character(
             first_name=character.first_name,
@@ -132,6 +134,9 @@ async def delete_character(
         token: str = Depends(token_auth_scheme)
     ):
     result = VerifyToken(token.credentials).verify()
+    if result.get("status"):
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return result
     try:
         character_to_delete = db.query(Character).filter(Character.character_id==id).one()
         db.delete(character_to_delete)
