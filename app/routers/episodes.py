@@ -29,7 +29,7 @@ def get_db():
     },
     response_model=list[EpisodeCreate]
 )
-async def get_episodes(response = Response, db: Session = Depends(get_db)):
+async def get_episodes(response: Response, db: Session = Depends(get_db)):
     """ Returns a list of all episodes """
     try:
         episodes = db.query(Episode).all()
