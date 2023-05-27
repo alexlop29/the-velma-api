@@ -14,6 +14,7 @@ from sqlalchemy import select
 import json
 from fastapi.responses import JSONResponse
 import sentry_sdk
+from pydantic import ValidationError
 
 router = APIRouter()
 token_auth_scheme  = HTTPBearer()
@@ -95,6 +96,10 @@ async def create_episode_by_character(
         sentry_sdk.capture_message(error)
         response.status_code = 404
         return HTTPException(status_code=404, detail="Not found")
+    except ValidationError as error:
+        sentry_sdk.capture_message(error)
+        response.status_code=422
+        return {"status": "error", "msg": error.__str__()}
     except Exception as error:
         sentry_sdk.capture_message(error)
         response.status_code = 500
