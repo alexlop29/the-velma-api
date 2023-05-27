@@ -44,7 +44,6 @@ async def get_episode_by_character(
         .filter(Character.character_id == id) \
         .all()
         if not characters_by_episode:
-            sentry_sdk.capture_message(error)
             response.status_code = 404
             return HTTPException(status_code=404, detail="Not found")
     except exc.SQLAlchemyError as error:
