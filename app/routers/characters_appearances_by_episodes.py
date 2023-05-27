@@ -25,7 +25,7 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/episode_appearances/{character_id}", tags=["episode_apperances"])
+@router.get("/episode_appearances/{character_id}", tags=["episode_appearances"])
 async def get_episode_by_character(
         id: int,
         response: Response, 
@@ -43,6 +43,10 @@ async def get_episode_by_character(
         .join(Episode, CharacterByEpisode.episode_id == Episode.episode_id) \
         .filter(Character.character_id == id) \
         .all()
+        if not characters_by_episode:
+            sentry_sdk.capture_message(error)
+            response.status_code = 404
+            return HTTPException(status_code=404, detail="Not found")
     except exc.SQLAlchemyError as error:
         sentry_sdk.capture_message(error)
         response.status_code=500
