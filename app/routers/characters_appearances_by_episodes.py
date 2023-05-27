@@ -76,8 +76,7 @@ async def get_episode_appearances_by_character(
     responses={
         500: {"description": "Internal server error"},
         404: {"description": "Not found"}
-    },
-    response_model=list[CharacterByEpisodeCreate]
+    }
 )
 async def create_episode_appearances_by_character(
         response: Response,
