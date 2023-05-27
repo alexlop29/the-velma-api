@@ -22,7 +22,7 @@ def get_db():
         db.close()
 
 @router.get(
-    "/locations/",
+    "/locations",
     tags=["locations"],
     responses={
         500: {"description": "Internal server error"}
@@ -59,7 +59,7 @@ async def get_count_of_locations(response: Response, db: Session = Depends(get_d
     }
     return JSONResponse(content=jsonable_encoder(count_to_json))
 
-@router.post("/location/", tags=["locations"])
+@router.post("/locations", tags=["locations"])
 async def create_location(
         response: Response,
         location: LocationCreate, 

@@ -25,7 +25,14 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/episode_appearances/{character_id}", tags=["episode_appearances"])
+@router.get(
+    "/episode_appearances",
+    tags=["episode_appearances"],
+    responses={
+        500: {"description": "Internal server error"},
+        404: {"description": "Not found"}
+    }
+)
 async def get_episode_by_character(
         id: int,
         response: Response, 
@@ -49,7 +56,7 @@ async def get_episode_by_character(
     except exc.SQLAlchemyError as error:
         sentry_sdk.capture_message(error)
         response.status_code=500
-        return HTTPException(status_code=500, detail="Internal server")
+        return HTTPException(status_code=500, detail="Internal server error")
     results = [tuple(row) for row in characters_by_episode]
     dict_of_results = []
     for row in results:
@@ -62,27 +69,40 @@ async def get_episode_by_character(
         })
     return JSONResponse(content=jsonable_encoder(dict_of_results))
 
-@router.post("/episode_by_character/", tags=["episode_appearances"])
+@router.post(
+    "/episode_appearances",
+    tags=["episode_appearances"],
+    responses={
+        500: {"description": "Internal server error"},
+        404: {"description": "Not found"}
+    },
+    response_model=list[CharacterByEpisodeCreate]
+)
 async def create_episode_by_character(
         response: Response,
         character_by_episode: CharacterByEpisodeCreate, 
         db: Session = Depends(get_db),
         token: str = Depends(token_auth_scheme)
     ):
-
     result = VerifyToken(token.credentials).verify()
     if result.get("status"):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return result
-
-    character_info = db.query(Character).filter(Character.character_id==character_by_episode.character_id).first()
-    episode_info = db.query(Episode).filter(Episode.episode_id==character_by_episode.episode_id).first()
-
+    try:
+        character_info = db.query(Character).filter(Character.character_id==character_by_episode.character_id).one()
+        episode_info = db.query(Episode).filter(Episode.episode_id==character_by_episode.episode_id).one()
+    except exc.NoResultFound as error:
+        sentry_sdk.capture_message(error)
+        response.status_code = 404
+        return HTTPException(status_code=404, detail="Not found")
+    except Exception as error:
+        sentry_sdk.capture_message(error)
+        response.status_code = 500
+        return HTTPException(status_code=500, detail="Internal server error")
     character_info.episodes.append(episode_info)
     db.add(character_info)
     db.commit()
     db.refresh(character_info)
-
     return db.query(CharacterByEpisode).filter(
         CharacterByEpisode.character_id==character_by_episode.character_id
     ).all()
