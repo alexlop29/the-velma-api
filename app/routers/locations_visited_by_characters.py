@@ -72,11 +72,11 @@ async def get_location_appearances_by_character(
     responses={
         500: {"description": "Internal server error"},
         404: {"description": "Not found"}
-    },
-    response_model=list[LocationsByCharactersCreate]
+    }
 )
 async def create_location_by_character(
         response: Response,
+        location_by_character: LocationsByCharactersCreate, 
         db: Session = Depends(get_db),
         token: str = Depends(token_auth_scheme)
     ):
