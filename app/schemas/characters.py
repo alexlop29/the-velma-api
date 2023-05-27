@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError, validator
 
 class CharacterBase(BaseModel):
     first_name: str

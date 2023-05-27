@@ -107,9 +107,9 @@ async def create_character(
             species=character.species,
             gender=character.gender
         )
-    except ValidationError as e:
+    except ValidationError as error:
         sentry_sdk.capture_message(e)
-        raise HTTPException(status_code=422, detail=e)
+        return {"status": "error", "msg": error.__str__()}
     
     db.add(character_info )
     db.commit()
