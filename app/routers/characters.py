@@ -134,7 +134,7 @@ async def delete_character(
     result = VerifyToken(token.credentials).verify()
     try:
         character_to_delete = db.query(Character).filter(Character.character_id==id).one()
-        character_to_delete.delete()
+        db.delete(character_to_delete)
         db.commit()
     except exc.NoResultFound as error:
         sentry_sdk.capture_message(error)
@@ -142,7 +142,8 @@ async def delete_character(
         return HTTPException(status_code=404, detail="Not found")
     except Exception as error:
         sentry_sdk.capture_message(error)
-        return {"status": "error", "msg": error.__str__()}
+        response.status_code = 500
+        return HTTPException(status_code=500, detail="Internal server error")
     return JSONResponse(
         content=jsonable_encoder(
             {"description": "Successful response"}
