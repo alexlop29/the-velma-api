@@ -1,12 +1,15 @@
 """ Queries the Episodes table """
 
-from fastapi import Depends, APIRouter, Response, status
+from fastapi import Depends, APIRouter, Response, status, HTTPException
 from fastapi.security import HTTPBearer
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from schemas.episodes import EpisodeCreate as EpisodeCreate
 from models.episodes import Episode as Episode
 from config.db import SessionLocal, engine
 from internal.validate import VerifyToken
+import sentry_sdk
 
 router = APIRouter()
 token_auth_scheme  = HTTPBearer()
@@ -18,13 +21,27 @@ def get_db():
     finally:
         db.close()
 
+@router.get(
+    "/episodes/",
+    tags=["episodes"],
+    responses={
+        500: {"description": "Internal server error"}
+    },
+    response_model=list[EpisodeCreate]
+)
+async def get_episodes(response = Response, db: Session = Depends(get_db)):
+    """ Returns a list of all episodes """
+    try:
+        episodes = db.query(Episode).all()
+    except Exception as error:
+        sentry_sdk.capture_message(error)
+        response.status_code = 500
+        return  HTTPException(status_code=500, detail="Internal server error")
+    return JSONResponse(content=jsonable_encoder(episodes))
+
 @router.get("/episode_count/", tags=["episodes"])
 async def get_episode_count(db: Session = Depends(get_db)):
     return db.query(Episode).count()
-
-@router.get("/episodes/", tags=["episodes"])
-async def get_episodes(db: Session = Depends(get_db)):
-    return db.query(Episode).all()
 
 @router.post("/episode/", tags=["episodes"])
 async def create_episode(
