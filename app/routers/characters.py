@@ -107,7 +107,7 @@ async def create_character(
             species=character.species,
             gender=character.gender
         )
-    except ValidationError as error:
+    except Exception as error:
         sentry_sdk.capture_message(e)
         return {"status": "error", "msg": error.__str__()}
     
@@ -115,3 +115,27 @@ async def create_character(
     db.commit()
     db.refresh(character_info)
     return character_info
+
+@router.delete(
+        "/characters",
+        tags=["characters"],
+        responses={
+            500: {"description": "Internal server error"},
+            200: {"description": "Successful response"}
+        }
+    )
+async def delete_character(
+        response: Response,
+        id: int,
+        db: Session = Depends(get_db),
+        token: str = Depends(token_auth_scheme)
+    ):
+    result = VerifyToken(token.credentials).verify()
+    try:
+        deleted_character = Character.query.filter_by(character_id=id).delete()
+        db.commit()
+        return JSONResponse(content=jsonable_encoder(deleted_character))
+    except Exception as error:
+        sentry_sdk.capture_message(e)
+        return {"status": "error", "msg": error.__str__()}
+
