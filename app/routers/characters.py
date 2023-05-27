@@ -39,7 +39,7 @@ async def get_characters(db: Session = Depends(get_db), response = Response):
     try:
         characters = db.query(Character).all()
     except exc.SQLAlchemyError as err:
-        sentry_sdk.capture_message(type(err))
+        sentry_sdk.capture_message(err)
         response.status_code = 500
         return HTTPException(status_code=500, detail="Internal server error")
     return JSONResponse(content=jsonable_encoder(characters))
@@ -57,7 +57,7 @@ async def get_count_of_characters(db: Session = Depends(get_db), response = Resp
     try:
         count = db.query(Character).count()
     except exc.SQLAlchemyError as err:
-        sentry_sdk.capture_message(type(err))
+        sentry_sdk.capture_message(err)
         response.status_code = 500
         return HTTPException(status_code=500, detail="Internal server error")
     count_to_json = {
@@ -81,7 +81,7 @@ async def get_character(query: str, response = Response, db: Session = Depends(g
         Character.last_name.ilike(f'%{query}%'))
         ).all()
     except exc.SQLAlchemyError as err:
-        sentry_sdk.capture_message(type(err))
+        sentry_sdk.capture_message(err)
         response.status_code = 500
         return HTTPException(status_code=500, detail="Internal server error")
     return JSONResponse(content=jsonable_encoder(character_search))
