@@ -137,4 +137,8 @@ async def delete_character(
     except Exception as error:
         sentry_sdk.capture_message(error)
         return {"status": "error", "msg": error.__str__()}
-    return JSONResponse(content=jsonable_encoder(deleted_character))
+    return JSONResponse(
+        content=jsonable_encoder(
+            {"description": "Successful response"}
+        )
+    )
