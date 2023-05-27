@@ -108,7 +108,7 @@ async def create_character(
             gender=character.gender
         )
     except Exception as error:
-        sentry_sdk.capture_message(e)
+        sentry_sdk.capture_message(error)
         return {"status": "error", "msg": error.__str__()}
     
     db.add(character_info )
@@ -136,6 +136,6 @@ async def delete_character(
         db.commit()
         return JSONResponse(content=jsonable_encoder(deleted_character))
     except Exception as error:
-        sentry_sdk.capture_message(e)
+        sentry_sdk.capture_message(error)
         return {"status": "error", "msg": error.__str__()}
 
