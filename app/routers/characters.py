@@ -137,7 +137,7 @@ async def delete_character(
         character_to_delete.delete()
         db.commit()
     except exc.NoResultFound as error:
-        sentry_sdk.capture_message(character_to_delete)
+        sentry_sdk.capture_message(error)
         return HTTPException(status_code=404, detail="Not found")
     except Exception as error:
         sentry_sdk.capture_message(error)
