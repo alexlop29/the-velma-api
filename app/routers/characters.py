@@ -133,13 +133,12 @@ async def delete_character(
     ):
     result = VerifyToken(token.credentials).verify()
     try:
-        character_to_delete = db.query(Character).filter(Character.character_id==id)
-        print(character_to_delete)
-        if not character_to_delete:
-            sentry_sdk.capture_message(character_to_delete)
-            return HTTPException(status_code=404, detail="Not found")
+        character_to_delete = db.query(Character).filter(Character.character_id==id).one()
         character_to_delete.delete()
         db.commit()
+    except exc.NoResultFound as error:
+        sentry_sdk.capture_message(character_to_delete)
+        return HTTPException(status_code=404, detail="Not found")
     except Exception as error:
         sentry_sdk.capture_message(error)
         return {"status": "error", "msg": error.__str__()}
