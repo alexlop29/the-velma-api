@@ -48,6 +48,7 @@ async def get_episodes(response: Response, db: Session = Depends(get_db)):
     }
 )
 async def get_count_of_episodes(response: Response, db: Session = Depends(get_db)):
+    """ Returns a count of episodes """
     try:
         count = db.query(Episode).count()
     except Exception as error:

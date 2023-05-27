@@ -39,9 +39,25 @@ async def get_locations(response: Response, db: Session = Depends(get_db)):
         return  HTTPException(status_code=500, detail="Internal server error")
     return JSONResponse(content=jsonable_encoder(locations))
 
-@router.get("/locations/count", tags=["locations"])
-async def get_location_count(db: Session = Depends(get_db)):
-    return db.query(Location).count()
+@router.get(
+    "/locations/count",
+    tags=["locations"],
+    responses={
+        500: {"description": "Internal server error"}
+    }
+)
+async def get_count_of_locations(response: Response, db: Session = Depends(get_db)):
+    """ Returns a count of locations """
+    try:
+        count =  db.query(Location).count()
+    except Exception as error:
+        sentry_sdk.capture_message(error)
+        response.status_code = 500
+        return HTTPException(status_code=500, detail="Internal server error")
+    count_to_json = {
+        'count':count
+    }
+    return JSONResponse(content=jsonable_encoder(count_to_json))
 
 @router.post("/location/", tags=["locations"])
 async def create_location(
