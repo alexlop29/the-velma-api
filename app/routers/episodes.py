@@ -39,9 +39,24 @@ async def get_episodes(response: Response, db: Session = Depends(get_db)):
         return  HTTPException(status_code=500, detail="Internal server error")
     return JSONResponse(content=jsonable_encoder(episodes))
 
-@router.get("/episode_count/", tags=["episodes"])
-async def get_episode_count(db: Session = Depends(get_db)):
-    return db.query(Episode).count()
+@router.get(
+    "/episodes/count",
+    tags=["episodes"],
+    responses={
+        500: {"description": "Internal server error"}
+    }
+)
+async def get_count_of_episodes(response: Response, db: Session = Depends(get_db)):
+    try:
+        count = db.query(Episode).count()
+    except Exception as error:
+        sentry_sdk.capture_message(error)
+        response.status_code = 500
+        return HTTPException(status_code=500, detail="Internal server error")
+    count_to_json = {
+        'count':count
+    }
+    return JSONResponse(content=jsonable_encoder(count_to_json))
 
 @router.post("/episode/", tags=["episodes"])
 async def create_episode(
