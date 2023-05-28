@@ -5,6 +5,7 @@ from fastapi.security import HTTPBearer
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import exc
 from schemas.locations import LocationCreate as LocationCreate
 from models.locations import Location as Location
 from config.db import SessionLocal, engine
@@ -58,6 +59,25 @@ async def get_count_of_locations(response: Response, db: Session = Depends(get_d
         'count':count
     }
     return JSONResponse(content=jsonable_encoder(count_to_json))
+
+@router.get(
+        "/locations/search",
+        tags=["locations"],
+        responses={
+            500: {"description": "Internal server error"}
+        },
+        response_model=list[LocationCreate]
+    )
+async def search_locations(query: str, db: Session = Depends(get_db)):
+    """ Returns a list of locations matching the search string """
+    try:
+        location_search = db.query(Location).filter(
+        Location.name.ilike(f'%{query}%')
+        ).all()
+    except exc.SQLAlchemyError as err:
+        sentry_sdk.capture_message(type(err))
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    return JSONResponse(content=jsonable_encoder(location_search))
 
 @router.post("/locations", tags=["locations"])
 async def create_location(
