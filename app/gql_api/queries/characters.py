@@ -37,7 +37,8 @@ def get_db():
 @strawberry.type
 class Query:
     @strawberry.field
-    async def characters(self) -> list[Schema_Char]:
-        db: Session = Depends(get_db)
-        return db.query(Character).order_by(Character.first_name)
-        return [Schema_Char.marshal(Character) for character_item in list_of_chars]
+    def characters(self) -> list[Schema_Char]:
+        db = get_db()
+        sql = db.query(Character).order_by(Character.first_name)
+        db_chars = (db.execute(sql)).scalars().unique().all()
+        return [Schema_Char.marshal(Character) for character in db_chars]
