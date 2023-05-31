@@ -28,5 +28,5 @@ class Query:
     async def characters(self) -> list[Schema_Char]:
         async with get_db() as db:
             sql = db.query(Character).order_by(Character.first_name)
-            db_chars = (await s.execute(sql)).scalars().unique().all()
+            db_chars = (await db.execute(sql)).scalars().unique().all()
         return [Schema_Char.marshal(Character) for character in db_chars]
