@@ -25,7 +25,7 @@ def get_db():
 @strawberry.type
 class Query:
     @strawberry.field
-    async def characters(self) -> list[Character]:
+    async def characters(self) -> list[Schema_Char]:
         async with get_db() as db:
             sql = db.query(Character).order_by(Character.first_name)
             db_chars = (await s.execute(sql)).scalars().unique().all()
