@@ -39,5 +39,5 @@ class Query:
     @strawberry.field
     async def characters(self) -> list[Schema_Char]:
         db: Session = Depends(get_db)
-        list_of_chars = db.query(Character).order_by(Character.first_name)
+        return db.query(Character).order_by(Character.first_name)
         return [Schema_Char.marshal(Character) for character_item in list_of_chars]
