@@ -7,6 +7,8 @@ import sentry_sdk
 from sentry_sdk.integrations.starlette import StarletteIntegration
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
+import strawberry
+from strawberry.fastapi import GraphQLRouter
 
 sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
@@ -18,6 +20,14 @@ sentry_sdk.init(
         SqlalchemyIntegration()
     ]
 )
+
+@strawberry.type
+class Query:
+    @strawberry.field
+    def hello(self) -> str:
+        return "Hello World"
+schema = strawberry.Schema(Query)
+graphql_app = GraphQLRouter(schema)
 
 description = """
 Query information about HBO Max's Velma
@@ -40,6 +50,7 @@ app.include_router(episodes.router)
 app.include_router(locations.router)
 app.include_router(characters_appearances_by_episodes.router)
 app.include_router(locations_visited_by_characters.router)
+app.include_router(graphql_app, prefix="/graphql")
 
 @app.get("/", include_in_schema=False)
 async def root():

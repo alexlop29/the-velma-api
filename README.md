@@ -14,3 +14,4 @@ NOTE TO SELF:
 - Need to return to finish error handling in /characters
 - Need to test passing invalid token
 - non existing character in /characters/search should produce 404 - not found (check all)
+- function to check for duplicate records

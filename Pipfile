@@ -17,6 +17,7 @@ pip-audit = "*"
 bandit = "*"
 pylint = "*"
 sentry-sdk = "1.24.0"
+strawberry-graphql = "0.178.1"
 
 [dev-packages]
 
