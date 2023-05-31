@@ -38,5 +38,5 @@ def get_db():
 class Query:
     @strawberry.field
     def characters(self) -> list[Schema_Char]:
-        db = get_db()
+        db: Session = Depends(get_db)
         return db.query(Character).order_by(Character.first_name)
