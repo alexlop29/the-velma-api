@@ -50,7 +50,7 @@ app.include_router(episodes.router)
 app.include_router(locations.router)
 app.include_router(characters_appearances_by_episodes.router)
 app.include_router(locations_visited_by_characters.router)
-app.include_router(graphql_app, prefix="/graphql")
+app.include_router(graphql_app, prefix="/graphql", include_in_schema=False)
 
 @app.get("/", include_in_schema=False)
 async def root():
