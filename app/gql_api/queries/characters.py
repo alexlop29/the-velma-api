@@ -3,6 +3,8 @@ from gql_api.schemas.characters import Character as Schema_Char
 from models.characters import Character
 from config.db import SessionLocal
 import strawberry
+from sqlalchemy.orm import Session
+from fastapi import Depends
 
 def get_db():
     """ Establishes a connection to the database """
@@ -36,6 +38,6 @@ def get_db():
 class Query:
     @strawberry.field
     async def characters(self) -> list[Schema_Char]:
-        db = get_db()
+        db: Session = Depends(get_db)
         list_of_chars = db.query(Character).order_by(Character.first_name)
         return [Schema_Char.marshal(Character) for character_item in list_of_chars]
