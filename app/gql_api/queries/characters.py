@@ -22,11 +22,20 @@ def get_db():
 #         return [Book.marshal(book) for book in db_books]
 
 
+# @strawberry.type
+# class Query:
+#     @strawberry.field
+#     async def characters(self) -> list[Schema_Char]:
+#         async with get_db() as db:
+#             sql = db.query(Character).order_by(Character.first_name)
+#             db_chars = (await db.execute(sql)).scalars().unique().all()
+#         return [Schema_Char.marshal(Character) for character in db_chars]
+    
+
 @strawberry.type
 class Query:
     @strawberry.field
     async def characters(self) -> list[Schema_Char]:
         async with get_db() as db:
-            sql = db.query(Character).order_by(Character.first_name)
-            db_chars = (await db.execute(sql)).scalars().unique().all()
-        return [Schema_Char.marshal(Character) for character in db_chars]
+            characters = db.query(Character).order_by(Character.first_name)
+        return [Schema_Char.marshal(Character) for character_item in characters]
