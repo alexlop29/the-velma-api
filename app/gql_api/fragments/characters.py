@@ -1,5 +1,5 @@
 import strawberry
-from graphql.schemas.characters import Character
+from gql_api.schemas.characters import Character
 
 @strawberry.type
 class CharacterNotFound:

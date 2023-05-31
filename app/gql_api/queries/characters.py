@@ -1,5 +1,5 @@
 import strawberry
-from graphql.schemas.characters import Character as Schema_Char
+from gql_api.schemas.characters import Character as Schema_Char
 from models.characters import Character
 from config.db import SessionLocal
 import strawberry

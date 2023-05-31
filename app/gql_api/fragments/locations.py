@@ -1,5 +1,5 @@
 import strawberry
-from graphql.schemas.locations import Location
+from gql_api.schemas.locations import Location
 
 @strawberry.type
 class LocationNotFound:

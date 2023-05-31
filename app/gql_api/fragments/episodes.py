@@ -1,5 +1,5 @@
 import strawberry
-from graphql.schemas.episodes import Episode
+from gql_api.schemas.episodes import Episode
 
 @strawberry.type
 class EpisoderNotFound:
