@@ -14,7 +14,7 @@ def get_db():
     finally:
         db.close()
 
-db = get_db()
+db = SessionLocal()
 
 # @strawberry.type
 # class Query:
@@ -40,4 +40,4 @@ db = get_db()
 class Query:
     @strawberry.field
     def characters(self) -> list[Schema_Char]:
-        return next(db).query(Character).order_by(Character.first_name)
+        return db.query(Character).order_by(Character.first_name)
