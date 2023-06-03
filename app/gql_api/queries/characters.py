@@ -22,6 +22,7 @@ class Query:
         return db.query(Character).order_by(Character.first_name)
     @strawberry.field
     def character(self, search_char: SearchCharacter) -> list[Schema_Char]:
+        print(search_char.first_name, search_char.last_name)
         return db.query(Character).filter(or_(
         Character.first_name.ilike(f'%{search_char.first_name}%'),
         Character.last_name.ilike(f'%{search_char.last_name}%'))
