@@ -26,8 +26,8 @@ def get_pagination_window(
         dataset: List[GenericType],
         ItemType: type,
         limit: int,
-        offset: int = 0,
         total: int,
+        offset: int = 0,
         filters: dict[str, str] = {}) -> PaginationWindow:
     """
     Get one pagination window on the given dataset for the given limit
@@ -38,7 +38,7 @@ def get_pagination_window(
     if limit <= 0 or limit > 10:
         raise Exception(f'limit ({limit}) must be between 0-10')
 
-    if offset != 0 and not 0 <= offset < total):
+    if offset != 0 and not 0 <= offset < total:
         raise Exception(f'offset ({offset}) is out of range '
                         f'(0-{total - 1})')
 
