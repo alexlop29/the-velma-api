@@ -23,7 +23,7 @@ sentry_sdk.init(
     ]
 )
 
-ComboQuery = merge_types("ComboQuery", (characters_gql.Character, episodes_gql.Episode))
+ComboQuery = merge_types("ComboQuery", (characters_gql.Character_GQL, episodes_gql.Episode_GQL))
 schema = strawberry.Schema(query=ComboQuery)
 graphql_app = GraphQLRouter(schema)
 
