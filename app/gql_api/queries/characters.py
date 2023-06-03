@@ -23,6 +23,6 @@ class Query:
     @strawberry.field
     def character(self, search_char: SearchCharacter) -> list[Schema_Char]:
         return db.query(Character).filter(or_(
-        Character.first_name.ilike(f'%{search_char}%'),
-        Character.last_name.ilike(f'%{search_char}%'))
+        Character.first_name.ilike(f'%{search_char.first_name}%'),
+        Character.last_name.ilike(f'%{search_char.last_name}%'))
         ).all()
