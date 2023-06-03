@@ -14,7 +14,7 @@ def get_db():
     finally:
         db.close()
 
-db: Session = Depends(get_db)
+db = get_db()
 
 # @strawberry.type
 # class Query:
