@@ -9,7 +9,7 @@ from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 import strawberry
 from strawberry.fastapi import GraphQLRouter
-from gql_api.queries import characters_gql, episodes_gql
+from gql_api.queries import characters_gql, episodes_gql, locations_gql
 from strawberry.tools import merge_types
 
 sentry_sdk.init(
@@ -23,7 +23,7 @@ sentry_sdk.init(
     ]
 )
 
-ComboQuery = merge_types("ComboQuery", (characters_gql.Character_GQL, episodes_gql.Episode_GQL))
+ComboQuery = merge_types("ComboQuery", (characters_gql.Character_GQL, episodes_gql.Episode_GQL, locations_gql.Location_GQL))
 schema = strawberry.Schema(query=ComboQuery)
 graphql_app = GraphQLRouter(schema)
 
