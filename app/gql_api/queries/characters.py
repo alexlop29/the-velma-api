@@ -8,6 +8,7 @@ from sqlalchemy import or_
 from fastapi import Depends
 from typing import Optional
 from enum import Enum
+import typing
 
 db = SessionLocal()
 
