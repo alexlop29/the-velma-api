@@ -26,10 +26,10 @@ class SearchCharacterPath:
 @strawberry.type
 class Query:
     @strawberry.field
-    def characters(self) -> list[Schema_Char]:
+    def get_characters(self) -> list[Schema_Char]:
         return db.query(Character).order_by(Character.first_name)
     @strawberry.field
-    def character(self, search_options: SearchCharacterPath) -> list[Schema_Char]:
+    def search_for_character(self, search_options: SearchCharacterPath) -> list[Schema_Char]:
         print(search_options.search_field, search_options.search_string)
         match search_options.search_field:
             case SelectCharacterSearchField.first_name:
@@ -37,6 +37,6 @@ class Query:
             case SelectCharacterSearchField.last_name:
                 return db.query(Character).filter(Character.last_name.ilike(f'%{search_options.search_string}%')).all()
     @strawberry.field
-    def character_count(self) -> JSON:
+    def count_of_characters(self) -> JSON:
         return {"count": db.query(Character).count()} 
 
