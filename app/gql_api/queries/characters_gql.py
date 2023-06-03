@@ -45,16 +45,11 @@ def get_pagination_window(
         raise Exception(f'offset ({offset}) is out of range '
                         f'(0-{len(dataset) - 1})')
 
-    total_items_count = len(dataset)
-
     items = dataset[offset:offset + limit]
 
     items = [ItemType.from_row(x) for x in items]
 
-    return PaginationWindow(
-        items=items,
-        total_items_count=total_items_count
-    )
+    return PaginationWindow(items=items)
 
 @strawberry.enum
 class SelectCharacterSearchField(Enum):
