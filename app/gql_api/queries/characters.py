@@ -4,40 +4,25 @@ from models.characters import Character
 from config.db import SessionLocal
 import strawberry
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from fastapi import Depends
-
-def get_db():
-    """ Establishes a connection to the database """
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+from typing import Optional
 
 db = SessionLocal()
 
-# @strawberry.type
-# class Query:
-#     @strawberry.field
-#     async def books(self) -> list[Book]:
-#         async with models.get_session() as s:
-#             sql = select(models.Book).order_by(models.Book.name)
-#             db_books = (await s.execute(sql)).scalars().unique().all()
-#         return [Book.marshal(book) for book in db_books]
-
-
-# @strawberry.type
-# class Query:
-#     @strawberry.field
-#     async def characters(self) -> list[Schema_Char]:
-#         async with get_db() as db:
-#             sql = db.query(Character).order_by(Character.first_name)
-#             db_chars = (await db.execute(sql)).scalars().unique().all()
-#         return [Schema_Char.marshal(Character) for character in db_chars]
-    
+@strawberry.input
+class SearchCharacter:
+    first_name: Optional[str] = strawberry.UNSET
+    last_name: Optional[str] = strawberry.UNSET
 
 @strawberry.type
 class Query:
     @strawberry.field
     def characters(self) -> list[Schema_Char]:
         return db.query(Character).order_by(Character.first_name)
+    @strawberry.field
+    def character(self, search_char: SearchCharacter) -> list[Schema_Char]:
+        return db.query(Character).filter(or_(
+        Character.first_name.ilike(f'%{search_char}%'),
+        Character.last_name.ilike(f'%{search_char}%'))
+        ).all()

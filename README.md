@@ -16,5 +16,3 @@ NOTE TO SELF:
 - non existing character in /characters/search should produce 404 - not found (check all)
 - function to check for duplicate records
 
-
-https://stackoverflow.com/questions/65982681/how-to-access-the-database-from-unit-test-in-fast-api
