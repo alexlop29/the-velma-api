@@ -17,7 +17,7 @@ class SelectCharacterSearchField(Enum):
     first_name = "first_name"
     last_name = "last_name"
 
-@strawberry.type
+@strawberry.input
 class SearchCharacterPath:
     search_field: SelectCharacterSearchField
     search_string : str
@@ -33,3 +33,5 @@ class Query:
         return db.query(Character).filter(
         Character.search_options.search_field.ilike(f'%{search_options.search_string}%')
         ).all()
+    
+
