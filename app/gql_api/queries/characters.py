@@ -35,4 +35,8 @@ class Query:
                 return db.query(Character).filter(Character.first_name.ilike(f'%{search_options.search_string}%')).all()
             case SelectCharacterSearchField.last_name:
                 return db.query(Character).filter(Character.last_name.ilike(f'%{search_options.search_string}%')).all()
+    @strawberry.field
+    def character_count(self):
+        return db.query(Character).count()
+        
 
