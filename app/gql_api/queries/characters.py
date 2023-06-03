@@ -30,8 +30,9 @@ class Query:
     @strawberry.field
     def character(self, search_options: SearchCharacterPath) -> list[Schema_Char]:
         print(search_options.search_field, search_options.search_string)
-        return db.query(Character).filter(
-        Character.search_options.search_field.ilike(f'%{search_options.search_string}%')
-        ).all()
-    
+        match search_options.search_field:
+            case SelectCharacterSearchField.first_name:
+                return db.query(Character).filter(Character.first_name.ilike(f'%{search_options.search_string}%')).all()
+            case SelectCharacterSearchField.last_name:
+                return db.query(Character).filter(Character.last_name.ilike(f'%{search_options.search_string}%')).all()
 
