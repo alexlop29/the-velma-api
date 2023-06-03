@@ -24,7 +24,7 @@ class SearchCharacterPath:
     search_string : str
 
 @strawberry.type
-class Character:
+class Character_GQL:
     @strawberry.field
     def get_characters(self) -> list[Schema_Char]:
         return db.query(Character).order_by(Character.first_name)

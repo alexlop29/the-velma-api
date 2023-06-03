@@ -14,7 +14,7 @@ from strawberry.scalars import JSON
 db = SessionLocal()
 
 @strawberry.type
-class Episode:
+class Episode_GQL:
     @strawberry.field
     def get_episodes(self) -> list[Episode_Schema]:
         return db.query(Episode).order_by(Episode.air_date)
