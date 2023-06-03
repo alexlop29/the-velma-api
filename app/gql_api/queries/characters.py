@@ -9,6 +9,7 @@ from fastapi import Depends
 from typing import Optional
 from enum import Enum
 import typing
+from strawberry.scalars import JSON
 
 db = SessionLocal()
 
@@ -36,7 +37,6 @@ class Query:
             case SelectCharacterSearchField.last_name:
                 return db.query(Character).filter(Character.last_name.ilike(f'%{search_options.search_string}%')).all()
     @strawberry.field
-    def character_count(self):
-        return db.query(Character).count()
-        
+    def character_count(self) -> JSON:
+        return {"count": db.query(Character).count()} 
 
