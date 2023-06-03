@@ -11,6 +11,7 @@ import strawberry
 from strawberry.fastapi import GraphQLRouter
 from gql_api.queries.characters import Character
 from gql_api.queries.episodes import Episode
+from strawberry.tools import merge_types
 
 sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
@@ -23,12 +24,8 @@ sentry_sdk.init(
     ]
 )
 
-# @strawberry.type
-# class Query:
-#     @strawberry.field
-#     def hello(self) -> str:
-#         return "Hello World"
-schema = strawberry.Schema(query=[Character, Episode])
+ComboQuery = merge_types("ComboQuery", (Character, Episode))
+schema = strawberry.Schema(query=ComboQuery)
 graphql_app = GraphQLRouter(schema)
 
 description = """
