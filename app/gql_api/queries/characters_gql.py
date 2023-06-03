@@ -22,10 +22,6 @@ class PaginationWindow(List[GenericType]):
         description="The list of items in this pagination window."
     )
 
-    total_items_count: int = strawberry.field(
-        description="Total number of items in the filtered dataset."
-    )
-
 def get_pagination_window(
         dataset: List[GenericType],
         ItemType: type,
@@ -46,8 +42,6 @@ def get_pagination_window(
                         f'(0-{len(dataset) - 1})')
 
     items = dataset[offset:offset + limit]
-
-    items = [ItemType.from_row(x) for x in items]
 
     return PaginationWindow(items=items)
 
