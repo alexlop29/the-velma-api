@@ -9,8 +9,8 @@ from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 import strawberry
 from strawberry.fastapi import GraphQLRouter
-from gql_api.queries.characters import Query
-from gql_api.queries.episodes import Query
+from gql_api.queries.characters import Character
+from gql_api.queries.episodes import Episode
 
 sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
@@ -28,7 +28,7 @@ sentry_sdk.init(
 #     @strawberry.field
 #     def hello(self) -> str:
 #         return "Hello World"
-schema = strawberry.Schema(query=Query)
+schema = strawberry.Schema(query=[Character, Episode])
 graphql_app = GraphQLRouter(schema)
 
 description = """
