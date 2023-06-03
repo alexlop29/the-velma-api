@@ -10,6 +10,7 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 import strawberry
 from strawberry.fastapi import GraphQLRouter
 from gql_api.queries.characters import Query
+from gql_api.queries.episodes import Query
 
 sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
