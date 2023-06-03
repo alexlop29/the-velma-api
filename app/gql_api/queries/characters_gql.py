@@ -27,6 +27,7 @@ def get_pagination_window(
         ItemType: type,
         limit: int,
         offset: int = 0,
+        total: int,
         filters: dict[str, str] = {}) -> PaginationWindow:
     """
     Get one pagination window on the given dataset for the given limit
@@ -34,12 +35,12 @@ def get_pagination_window(
     given filters
     """
 
-    if limit <= 0 or limit > 100:
-        raise Exception(f'limit ({limit}) must be between 0-100')
+    if limit <= 0 or limit > 10:
+        raise Exception(f'limit ({limit}) must be between 0-10')
 
-    if offset != 0 and not 0 <= offset < len(dataset):
+    if offset != 0 and not 0 <= offset < total):
         raise Exception(f'offset ({offset}) is out of range '
-                        f'(0-{len(dataset) - 1})')
+                        f'(0-{total - 1})')
 
     items = dataset[offset:offset + limit]
 
@@ -59,10 +60,12 @@ class SearchCharacterPath:
 class Character_GQL:
     @strawberry.field
     def get_characters(self, limit: int, offset: int = 0,) -> PaginationWindow[Schema_Char]:
+        count = db.query(Character).count()
         return get_pagination_window(dataset=db.query(Character).order_by(Character.first_name), \
                                     ItemType=Character, \
                                     limit=limit, \
-                                    offset=offset,)
+                                    offset=offset,
+                                    total=count)
     @strawberry.field
     def search_for_character(self, search_options: SearchCharacterPath) -> list[Schema_Char]:
         print(search_options.search_field, search_options.search_string)
