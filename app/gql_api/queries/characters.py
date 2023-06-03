@@ -7,13 +7,18 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from fastapi import Depends
 from typing import Optional
+from enum import Enum
 
 db = SessionLocal()
 
-@strawberry.input
-class SearchCharacter:
-    first_name: Optional[str] = strawberry.UNSET
-    last_name: Optional[str] = strawberry.UNSET
+class SelectCharacterSearchField(Enum):
+    first_name = "first_name"
+    last_name = "last_name"
+
+@strawberry.type
+class SearchCharacterPath:
+    search_field: SelectCharacterSearchField
+    search_string : str
 
 @strawberry.type
 class Query:
@@ -21,9 +26,8 @@ class Query:
     def characters(self) -> list[Schema_Char]:
         return db.query(Character).order_by(Character.first_name)
     @strawberry.field
-    def character(self, search_char: SearchCharacter) -> list[Schema_Char]:
-        print(search_char.first_name, search_char.last_name)
-        return db.query(Character).filter(or_(
-        Character.first_name.ilike(f'%{search_char.first_name}%'),
-        Character.last_name.ilike(f'%{search_char.last_name}%'))
+    def character(self, search_options: SearchCharacterPath) -> list[Schema_Char]:
+        print(search_options.search_field, search_options.search_string)
+        return db.query(Character).filter(
+        Character.search_options.search_field.ilike(f'%{search_options.search_string}%')
         ).all()
