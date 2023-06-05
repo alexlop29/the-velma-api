@@ -1,11 +1,10 @@
 import jwt
 from config.variables import settings
-import sentry_sdk
-import functools
+
 
 def set_up():
     """Sets up configuration for the app"""
-    
+
     config = {
         "DOMAIN": settings.DOMAIN,
         "API_AUDIENCE": settings.API_AUDIENCE,
@@ -13,6 +12,7 @@ def set_up():
         "ALGORITHMS": settings.ALGORITHMS,
     }
     return config
+
 
 class VerifyToken():
     """Does all the token verification using PyJWT"""
@@ -39,7 +39,7 @@ class VerifyToken():
         except jwt.exceptions.DecodeError as error:
             return {"status": "error", "msg": error.__str__()}
 
-        try: 
+        try:
             payload = jwt.decode(
                 self.token,
                 self.signing_key,
@@ -87,6 +87,6 @@ class VerifyToken():
 
                 result["code"] = f"insufficient_{claim_name}"
                 result["msg"] = (f"Insufficient {claim_name} ({value}). You don't have "
-                                  "access to this resource")
+                                 "access to this resource")
                 return result
         return result
