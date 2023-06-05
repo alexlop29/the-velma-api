@@ -3,11 +3,13 @@ from typing import List, TypeVar
 
 GenericType = TypeVar("GenericType")
 
+
 @strawberry.type
 class PaginationWindow(List[GenericType]):
     items: List[GenericType] = strawberry.field(
         description="The list of items in this pagination window."
     )
+
 
 def get_pagination_window(
         dataset: List[GenericType],
