@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, VARCHAR
+from sqlalchemy import Column, Integer
 from sqlalchemy import ForeignKey
-
 from config.db import Base
+
 
 class CharacterByEpisode(Base):
     __tablename__ = "character_appearances_by_episode"

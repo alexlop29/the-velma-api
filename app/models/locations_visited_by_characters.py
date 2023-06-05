@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, VARCHAR
+from sqlalchemy import Column, Integer
 from sqlalchemy import ForeignKey
-
 from config.db import Base
+
 
 class LocationsByCharacters(Base):
     __tablename__ = "locations_visited_by_characters"

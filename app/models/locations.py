@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, VARCHAR, ARRAY
+from sqlalchemy import Column, Integer, VARCHAR
 from sqlalchemy.orm import relationship
 from config.db import Base
+
 
 class Location(Base):
     __tablename__ = "locations"
@@ -9,7 +10,7 @@ class Location(Base):
     name = Column(VARCHAR)
 
     characters = relationship(
-        'Character', 
-        secondary = 'locations_visited_by_characters',
+        'Character',
+        secondary='locations_visited_by_characters',
         back_populates="locations"
     )
