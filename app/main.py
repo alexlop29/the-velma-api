@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from routers import characters, episodes, locations, characters_appearances_by_episodes, locations_visited_by_characters
+from routers import characters, episodes, locations
+from routers import characters_appearances_by_episodes, locations_visited_by_characters
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.responses import RedirectResponse
 from config.variables import settings
@@ -23,7 +24,11 @@ sentry_sdk.init(
     ]
 )
 
-ComboQuery = merge_types("ComboQuery", (characters_gql.Character_GQL, episodes_gql.Episode_GQL, locations_gql.Location_GQL))
+ComboQuery = merge_types("ComboQuery", (
+                          characters_gql.Character_GQL,
+                          episodes_gql.Episode_GQL,
+                          locations_gql.Location_GQL
+                        ))
 schema = strawberry.Schema(query=ComboQuery)
 graphql_app = GraphQLRouter(schema)
 
@@ -49,6 +54,7 @@ app.include_router(locations.router)
 app.include_router(characters_appearances_by_episodes.router)
 app.include_router(locations_visited_by_characters.router)
 app.include_router(graphql_app, prefix="/graphql", include_in_schema=False)
+
 
 @app.get("/", include_in_schema=False)
 async def root():
