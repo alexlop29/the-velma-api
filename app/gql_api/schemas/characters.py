@@ -1,6 +1,7 @@
 from models.characters import Character as Character_Model
 import strawberry
 
+
 @strawberry.type
 class Character:
     character_id: strawberry.ID

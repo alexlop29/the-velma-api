@@ -1,6 +1,7 @@
 from models.locations import Location
 import strawberry
 
+
 @strawberry.type
 class Location:
     location_id: strawberry.ID

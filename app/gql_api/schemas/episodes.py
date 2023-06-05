@@ -2,6 +2,7 @@ from models.episodes import Episode
 import strawberry
 import datetime
 
+
 @strawberry.type
 class Episode:
     episode_id: strawberry.ID
