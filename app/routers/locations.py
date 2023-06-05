@@ -8,12 +8,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import exc
 from schemas.locations import LocationCreate as LocationCreate
 from models.locations import Location as Location
-from config.db import SessionLocal, engine
+from config.db import SessionLocal
 from internal.validate import VerifyToken
 import sentry_sdk
 
 router = APIRouter()
-token_auth_scheme  = HTTPBearer()
+token_auth_scheme = HTTPBearer()
+
 
 def get_db():
     db = SessionLocal()
@@ -21,6 +22,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 @router.get(
     "/locations",
@@ -37,8 +39,9 @@ async def get_locations(response: Response, db: Session = Depends(get_db)):
     except Exception as error:
         sentry_sdk.capture_message(error)
         response.status_code = 500
-        return  HTTPException(status_code=500, detail="Internal server error")
+        return HTTPException(status_code=500, detail="Internal server error")
     return JSONResponse(content=jsonable_encoder(locations))
+
 
 @router.get(
     "/locations/count",
@@ -50,15 +53,16 @@ async def get_locations(response: Response, db: Session = Depends(get_db)):
 async def get_count_of_locations(response: Response, db: Session = Depends(get_db)):
     """ Returns a count of locations """
     try:
-        count =  db.query(Location).count()
+        count = db.query(Location).count()
     except Exception as error:
         sentry_sdk.capture_message(error)
         response.status_code = 500
         return HTTPException(status_code=500, detail="Internal server error")
     count_to_json = {
-        'count':count
+        'count': count
     }
     return JSONResponse(content=jsonable_encoder(count_to_json))
+
 
 @router.get(
         "/locations/search",
@@ -72,21 +76,20 @@ async def search_locations(query: str, db: Session = Depends(get_db)):
     """ Returns a list of locations matching the search string """
     try:
         location_search = db.query(Location).filter(
-        Location.name.ilike(f'%{query}%')
+          Location.name.ilike(f'%{query}%')
         ).all()
     except exc.SQLAlchemyError as err:
         sentry_sdk.capture_message(type(err))
         raise HTTPException(status_code=500, detail="Internal Server Error")
     return JSONResponse(content=jsonable_encoder(location_search))
 
+
 @router.post("/locations", tags=["locations"])
 async def create_location(
         response: Response,
-        location: LocationCreate, 
+        location: LocationCreate,
         db: Session = Depends(get_db),
-        token: str = Depends(token_auth_scheme)
-    ):
-
+        token: str = Depends(token_auth_scheme)):
     result = VerifyToken(token.credentials).verify()
     if result.get("status"):
         response.status_code = status.HTTP_400_BAD_REQUEST
