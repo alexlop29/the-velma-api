@@ -9,7 +9,3 @@ docker-compose down
 docker-compose up --build (To Relaunch with Updates)
 ```
 
-NOTE TO SELF:
-- Remediate the pylint errors
-- need to unit tests
-
