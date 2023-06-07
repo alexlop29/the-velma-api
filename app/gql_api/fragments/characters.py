@@ -1,3 +1,4 @@
+""" Contains a series of re-usable error handling snippets for the Character schema """
 import strawberry
 from gql_api.schemas.characters import Character
 

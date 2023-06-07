@@ -1,6 +1,9 @@
-import strawberry
+""" Contains a reusable pagination function applicable to GraphQL queries """
 from typing import List, TypeVar
+import strawberry
 
+# pylint: disable=invalid-name
+# NOTE: (alopez) TypeVar must be assigned to a variable named "GenericType"Pylance
 GenericType = TypeVar("GenericType")
 
 
@@ -13,11 +16,9 @@ class PaginationWindow(List[GenericType]):
 
 def get_pagination_window(
         dataset: List[GenericType],
-        ItemType: type,
         limit: int,
         total: int,
-        offset: int = 0,
-        filters: dict[str, str] = {}) -> PaginationWindow:
+        offset: int = 0) -> PaginationWindow:
     """
     Get one pagination window on the given dataset for the given limit
     and offset, ordered by the given attribute and filtered using the

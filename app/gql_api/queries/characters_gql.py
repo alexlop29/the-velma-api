@@ -1,3 +1,4 @@
+"""  """
 import strawberry
 from gql_api.schemas.characters import Character as Schema_Char
 from models.characters import Character

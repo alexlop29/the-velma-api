@@ -11,10 +11,5 @@ docker-compose up --build (To Relaunch with Updates)
 
 NOTE TO SELF:
 - Remediate the pylint errors
-- Need to return to finish error handling in /characters
-- Need to test passing invalid token
-- non existing character in /characters/search should produce 404 - not found (check all)
-- function to check for duplicate records
-- need to add error handling in graphql endpoint
 - need to unit tests
 

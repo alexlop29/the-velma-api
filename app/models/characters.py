@@ -1,9 +1,12 @@
+""" Uses SQLAlchemy to connect to the characters """
 from sqlalchemy import Column, Integer, VARCHAR
 from sqlalchemy.orm import relationship
 from config.db import Base
 
 
 class Character(Base):
+    # pylint: disable=too-few-public-methods
+    """ Creates attributes corresponding to each column in its corresponding database table """
     __tablename__ = "characters"
 
     character_id = Column(Integer, primary_key=True)

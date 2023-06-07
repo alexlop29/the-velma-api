@@ -1,3 +1,4 @@
+""" Collection of functions used to validate Fast API's HTTPBearer() using Auth0 """
 import jwt
 from config.variables import settings
 
@@ -15,6 +16,7 @@ def set_up():
 
 
 class VerifyToken():
+    # pylint: disable=too-few-public-methods
     """Does all the token verification using PyJWT"""
 
     def __init__(self, token, permissions=None, scopes=None):
@@ -22,22 +24,21 @@ class VerifyToken():
         self.permissions = permissions
         self.scopes = scopes
         self.config = set_up()
+        self.signing_key = None
 
-        # This gets the JWKS from a given URL and does processing so you can use any of
-        # the keys available
         jwks_url = f'https://{self.config["DOMAIN"]}/.well-known/jwks.json'
         self.jwks_client = jwt.PyJWKClient(jwks_url)
 
     def verify(self):
-        # This gets the 'kid' from the passed token
+        """ Gets the 'kid' from the passed token """
         try:
             self.signing_key = self.jwks_client.get_signing_key_from_jwt(
                 self.token
             ).key
         except jwt.exceptions.PyJWKClientError as error:
-            return {"status": "error", "msg": error.__str__()}
+            return {"status": "error", "msg": error}
         except jwt.exceptions.DecodeError as error:
-            return {"status": "error", "msg": error.__str__()}
+            return {"status": "error", "msg": error}
 
         try:
             payload = jwt.decode(
@@ -47,8 +48,8 @@ class VerifyToken():
                 audience=self.config["API_AUDIENCE"],
                 issuer=self.config["ISSUER"],
             )
-        except Exception as e:
-            return {"status": "error", "message": str(e)}
+        except jwt.exceptions.DecodeError as error:
+            return {"status": "error", "message": str(error)}
 
         if self.scopes:
             result = self._check_claims(payload, 'scope', str, self.scopes.split(' '))
